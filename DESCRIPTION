@@ -14,3 +14,6 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Suggest: knitr, rmarkdown
+Imports:
+    extRemes,
+    RivRetrieve
