@@ -16,4 +16,8 @@ VignetteBuilder: knitr
 Suggest: knitr, rmarkdown
 Imports:
     extRemes,
-    RivRetrieve
+    RivRetrieve,
+    graphics,
+    utils,
+    stats,
+    data.table
