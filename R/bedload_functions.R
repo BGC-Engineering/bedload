@@ -78,11 +78,30 @@ t_star <- function(tau, d, g = 9.81, rho = 1000, rho_s = 2650){
 #' @param g the acceleration of gravity. defaults to 9.81 m/s2
 #' @param kv kinematic viscosity of water. Defaults to 1e-6
 #' @export
-t_crit_soul <- function(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-6){
-  Gs <- (rho_s - rho) / rho
-  d_s <- d_star(d, Gs, g, kv)
-  tc_star <- 0.3 / (1 + 1.2 * d_s) + 0.055*(1 - exp(-0.020 * d_s))
-  return(tc_star)
+t_crit_soul <- function(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-6) {
+  # Estimates the critical Shields parameter for initiation of sediment motion
+  # using the hiding-function relationship of Soulsby & Whitehouse (1997).
+  #
+  # Parameters
+  #
+  # d     : numeric, grain diameter (m)
+  # rho   : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s : numeric, sediment density (kg/m^3). Default 2650.
+  # g     : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # kv    : numeric, kinematic viscosity (m^2/s). Default 1e-6.
+  #
+  # Returns
+  #
+  # numeric, critical Shields parameter (dimensionless).
+  #   Accounts for grain size through the dimensionless grain diameter (d_star),
+  #   transitioning from hiding-dominated (fine) to exposure-dominated (coarse)
+  #   behaviour.
+
+  Gs     <- (rho_s - rho) / rho
+  d_s    <- d_star(d, Gs, g, kv)
+  0.3 / (1 + 1.2 * d_s) + 0.055 * (1 - exp(-0.020 * d_s))
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
 
 
@@ -97,25 +116,34 @@ t_crit_soul <- function(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-6){
 #' @param g the acceleration of gravity. defaults to 9.81 m/s2
 #' @param kv kinematic viscosity of water. Defaults to 1e-6
 #' @export
-t_crit_vr <- function(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-6){
-  Gs <- (rho_s - rho) / rho
+t_crit_vr <- function(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-6) {
+  # Estimates the critical Shields parameter for initiation of sediment motion
+  # using the five-regime piecewise relationship of Van Rijn (1984).
+  #
+  # Parameters
+  #
+  # d     : numeric, grain diameter (m)
+  # rho   : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s : numeric, sediment density (kg/m^3). Default 2650.
+  # g     : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # kv    : numeric, kinematic viscosity (m^2/s). Default 1e-6.
+  #
+  # Returns
+  #
+  # numeric, critical Shields parameter (dimensionless).
+  #   Piecewise function of dimensionless grain size (d_star), covering five
+  #   hydraulic regimes from viscous (d_star <= 4) to fully rough (d_star > 150).
+
+  Gs  <- (rho_s - rho) / rho
   d_s <- d_star(d, Gs, g, kv)
-  if(d_s <= 4){
-    t_crit <- 0.24 * d_s^-1
-  }
-  if(d_s > 4 & d_s <= 10){
-    t_crit <- 0.14 * d_s^-0.64
-  }
-  if(d_s > 10 & d_s <= 20){
-    t_crit <- 0.04 * d_s^-0.1
-  }
-  if(d_s > 20 & d_s <= 150){
-    t_crit <- 0.013 * d_s^0.29
-  }
-  if(d_s > 150){
-    t_crit <- 0.056
-  }
-  return(t_crit)
+
+  if      (d_s <= 4)          0.24 * d_s^-1
+  else if (d_s <= 10)         0.14 * d_s^-0.64
+  else if (d_s <= 20)         0.04 * d_s^-0.1
+  else if (d_s <= 150)        0.013 * d_s^0.29
+  else                        0.056
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
 
 
@@ -148,17 +176,33 @@ d_star <- function(d, Gs = 1.65, g = 9.81, kv = 1e-6){
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-mpm <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650){
+mpm <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650) {
+  # Computes dimensionless bedload transport rate using the
+  # Meyer-Peter & Müller (1948) equation.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # t_crit : numeric, critical Shields parameter (dimensionless). Default 0.047.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Returns 0 when shear stress is below the critical threshold.
+
   tau <- tau_1D(R, S, g, rho)
   t_s <- t_star(tau, d, g, rho, rho_s)
 
-  if(t_s > t_crit) {
-    q_star <- 8 * (t_s - t_crit)^(3/2)
-  } else {
-    q_star <- 0
-  }
+  if (t_s <= t_crit) return(0)
 
-  return(q_star)
+  8 * (t_s - t_crit)^1.5
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
 
 
@@ -177,17 +221,33 @@ mpm <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650){
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-wp <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650){
+wp <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650) {
+  # Computes dimensionless bedload transport rate using the
+  # Wong & Parker (2006) equation.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # t_crit : numeric, critical Shields parameter (dimensionless). Default 0.047.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Returns 0 when shear stress is below the critical threshold.
+
   tau <- tau_1D(R, S, g, rho)
   t_s <- t_star(tau, d, g, rho, rho_s)
 
-  if(t_s > t_crit) {
-    q_star <- 4 * (t_s - t_crit)^(3/2)
-  } else {
-    q_star <- 0
-  }
+  if (t_s <= t_crit) return(0)
 
-  return(q_star)
+  4 * (t_s - t_crit)^1.5
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
 
 
@@ -205,13 +265,39 @@ wp <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650){
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @param kv kinematic viscosity of water. Defaults to 1e-6
 #' @export
-vr <- function(R, S, d, t_crit = t_crit_vr(d, rho, rho_s, g, kv), g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-6){
-  tau <- tau_1D(R,S, g, rho)
-  t_s <- t_star(tau, d, g, rho, rho_s)
-  Gs <- (rho_s - rho) / rho
-  d_s <- d_star(d, Gs, g, kv)
-  q_star <- (0.053 / d_s^(0.3))*(t_s / t_crit - 1)^2.1
-  return(q_star)
+vr <- function(R, S, d, t_crit = t_crit_vr(d, rho, rho_s, g, kv),
+               g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-6) {
+  # Computes dimensionless bedload transport rate using the Van Rijn (1984) approach.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # t_crit : numeric, critical Shields parameter (dimensionless).
+  #            Defaults to the value returned by t_crit_vr() using the
+  #            physical constants below.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  # kv     : numeric, kinematic viscosity (m^2/s). Default 1e-6.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Returns 0 when shear stress is below the critical threshold.
+
+  tau   <- tau_1D(R, S, g, rho)
+  t_s   <- t_star(tau, d, g, rho, rho_s)
+  Gs    <- (rho_s - rho) / rho
+  d_s   <- d_star(d, Gs, g, kv)
+
+  # return zero transport below the critical threshold rather than a negative value
+  if (t_s <= t_crit) return(0)
+
+  (0.053 / d_s^0.3) * (t_s / t_crit - 1)^2.1
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
 
 
@@ -230,19 +316,37 @@ vr <- function(R, S, d, t_crit = t_crit_vr(d, rho, rho_s, g, kv), g = 9.81, rho 
 #' @param kv kinematic viscosity of water. Defaults to 1e-6
 #' @export
 yln <- function(R, S, d, t_crit = t_crit_soul(d), g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-6){
-  tau <- tau_1D(R, S, g, rho)
-  t_s <- t_star(tau, d, g, rho, rho_s)
-  Gs <- (rho_s - rho) / rho
-  r <- t_s / t_crit - 1
-  sigma <- 2.45 * sqrt(t_crit) /  (Gs + 1)^0.4
+  # Computes dimensionless bedload transport rate using the Yalin (1963) equation.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # t_crit : numeric, critical Shields parameter (dimensionless).
+  #            Defaults to the value returned by t_crit_soul().
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  # kv     : numeric, kinematic viscosity (m^2/s). Default 1e-6. Unused directly
+  #            but retained for consistency with vr() signature.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Returns 0 when shear stress is below the critical threshold.
 
-  if(t_s > t_crit) {
-    q_star <- 0.635 * r * sqrt(t_s) * (1 - (1 /  (sigma * r)) * log(1 + sigma * r))
-  } else {
-    q_star <- 0
-  }
+  tau   <- tau_1D(R, S, g, rho)
+  t_s   <- t_star(tau, d, g, rho, rho_s)
+  Gs    <- (rho_s - rho) / rho
 
-  return(q_star)
+  if (t_s <= t_crit) return(0)
+
+  r     <- t_s / t_crit - 1
+  sigma <- 2.45 * sqrt(t_crit) / (Gs + 1)^0.4
+
+  0.635 * r * sqrt(t_s) * (1 - (1 / (sigma * r)) * log(1 + sigma * r))
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
 
 
@@ -260,20 +364,39 @@ yln <- function(R, S, d, t_crit = t_crit_soul(d), g = 9.81, rho = 1000, rho_s = 
 #' @param kv kinematic viscosity of water. Defaults to 1e-6
 #' @export
 eb <- function(R, S, d, g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-6) {
+  # Computes dimensionless bedload transport rate using the
+  # Einstein-Brown equation (Brown, 1950).
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  # kv     : numeric, kinematic viscosity (m^2/s). Default 1e-6.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Two regimes: exponential form below t_s = 0.19, power law above.
+  #   No critical threshold — transport is non-zero for any positive shear stress.
+
   tau <- tau_1D(R, S, g, rho)
   t_s <- t_star(tau, d, g, rho, rho_s)
-  Gs <- (rho_s - rho) / rho
+  Gs  <- (rho_s - rho) / rho
   d_s <- d_star(d, Gs, g, kv)
-  K <- sqrt(2/3 + 36 / d_s^3) - sqrt(36 / d_s^3)
-  if(t_s >= 0.19) {
-    q_star <- 40 * K * t_s^3
+  K   <- sqrt(2/3 + 36 / d_s^3) - sqrt(36 / d_s^3)
+
+  if (t_s >= 0.19) {
+    40 * K * t_s^3
   } else {
-    q_star <- (K * exp(-0.391 / t_s)) / 0.465
+    (K * exp(-0.391 / t_s)) / 0.465
   }
-  return(q_star)
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
-
-
 
 #' Estimating bed material transport using Eaton and Church (2011)
 #'
@@ -293,38 +416,63 @@ eb <- function(R, S, d, g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-6) {
 #' @param kv kinematic viscosity of water. Defaults to 1e-6
 #' @param t_crit critical dimensionless shear stress, calculated using Soulsby (1997)
 #' @export
-ec <- function(R,
-               S,
-               d,
-               d84 = 2 * d,
-               g = 9.81,
-               rho = 1000,
-               rho_s = 2650,
-               U = u_ferg(R, S, d84, a1, a2, g),
-               a1 = 6.5,
-               a2 = 2.5,
-               kv = 1e-6,
-               t_crit = t_crit_soul(d, rho, rho_s, g, kv)
-){
-  tau <- tau_1D(R,S, g, rho)
-  Gs <- (rho_s - rho) / rho
-  omega_s <- tau * U / (rho * (g * Gs * d)^(3/2))  #dimensionless stream power
-  dcrit <- t_crit * Gs * d / S #depth at which transport is initiated
-  Res <- u_ferg(dcrit, S, d84, a1, a2, g) / sqrt(g * dcrit * S) #reference resistance
-  om_crit <- Res * t_crit^(3/2)  #reference dimensionless stream power
-  if(omega_s > 0){
-    E_star <- (0.92 - 0.25 * sqrt(om_crit / omega_s))^9  #function fit by Eaton and Church 2011
-  }else{
-    E_star <- 0
-  }
-  q_star = E_star * omega_s  #translate efficiency to dimensionless bedload
-   if(q_star < 0){
-     q_star <- 0  #return 0 for in the event that q_star is less than 0.00001
-   }
-  return(q_star)
+ec <- function(R, S, d,
+               d84    = 2 * d,
+               g      = 9.81,
+               rho    = 1000,
+               rho_s  = 2650,
+               kv     = 1e-6,
+               a1     = 6.5,
+               a2     = 2.5,
+               U      = u_ferg(R, S, d84, a1, a2, g),
+               t_crit = t_crit_soul(d, rho, rho_s, g, kv)) {
+  # Computes dimensionless bedload transport rate using the Eaton & Church (2011)
+  # stream power efficiency approach.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, median grain diameter (m), D50
+  # d84    : numeric, 84th percentile grain diameter (m). Default 2 * d.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  # kv     : numeric, kinematic viscosity (m^2/s). Default 1e-6.
+  # a1     : numeric, Ferguson resistance coefficient, smooth end. Default 6.5.
+  # a2     : numeric, Ferguson resistance coefficient, rough end. Default 2.5.
+  # U      : numeric, mean flow velocity (m/s). Defaults to u_ferg(R, S, d84, a1, a2, g).
+  # t_crit : numeric, critical Shields parameter (dimensionless).
+  #            Defaults to t_crit_soul(d, rho, rho_s, g, kv).
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Returns 0 when dimensionless stream power is zero or negative.
+
+  tau     <- tau_1D(R, S, g, rho)
+  Gs      <- (rho_s - rho) / rho
+
+  # dimensionless stream power
+  omega_s <- tau * U / (rho * (g * Gs * d)^1.5)
+
+  if (omega_s <= 0) return(0)
+
+  # critical depth and reference resistance at transport initiation
+  d_crit  <- t_crit * Gs * d / S
+  Res     <- u_ferg(d_crit, S, d84, a1, a2, g) / sqrt(g * d_crit * S)
+
+  # reference dimensionless stream power at threshold
+  om_crit <- Res * t_crit^1.5
+
+  # transport efficiency (Eaton & Church 2011)
+  E_star  <- (0.92 - 0.25 * sqrt(om_crit / omega_s))^9
+  q_star  <- E_star * omega_s
+
+  pmax(q_star, 0)
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
-
-
 
 #' Estimating bed material transport using Recking (2013)
 #'
@@ -340,17 +488,43 @@ ec <- function(R,
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @param rp option to select equation suited to riffle pool morphology, default is FALSE
 #' @export
-rk <- function(R, S, d, d84 = 2 * d, g = 9.81, rho = 1000, rho_s = 2650, rp = FALSE){
-  tau <- tau_1D(R, S, g, rho)
-  t_s <- t_star(tau, d84, g, rho, rho_s)
-  if(rp){
-    t_sm <- (5 * S + 0.06) * (d84 / d)^(4.4*sqrt(S) - 1.5)
+rk <- function(R, S, d, d84 = 2 * d, g = 9.81, rho = 1000, rho_s = 2650, rp = FALSE) {
+  # Computes dimensionless bedload transport rate using the
+  # Recking (2013) equation.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # d84    : numeric, 84th percentile grain diameter (m). Default 2 * d.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  # rp     : logical, if TRUE uses the reach-averaged (riffle-pool) form of the
+  #            critical Shields parameter; if FALSE uses the plane-bed form.
+  #            Default FALSE.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   No critical threshold — transport is non-zero for any positive shear stress.
+  #   Note: Shields stress is computed using d84, not d.
+
+  tau  <- tau_1D(R, S, g, rho)
+  t_s  <- t_star(tau, d84, g, rho, rho_s)
+
+  t_sm <- if (rp) {
+    (5 * S + 0.06) * (d84 / d)^(4.4 * sqrt(S) - 1.5)
   } else {
-    t_sm <- 1.5 * S^0.75
+    1.5 * S^0.75
   }
-  q_star <- 14 * t_s^2.5 / (1 + (t_sm/t_s)^4)
-  return(q_star)
+
+  14 * t_s^2.5 / (1 + (t_sm / t_s)^4)
+
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
 }
+
 
 
 
@@ -366,112 +540,77 @@ rk <- function(R, S, d, d84 = 2 * d, g = 9.81, rho = 1000, rho_s = 2650, rp = FA
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-compare_fun <- function(d, S, d84 = 2 * d, g= 9.81, rho = 1000, rho_s = 2650) {
-  Gs <- (rho_s - rho) / rho
-  tau_critical <- 0.05 * g * (rho_s - rho) * d
-  tau_range <- seq(0.25 * tau_critical, 5 * tau_critical, length.out = 200)
-  R_range <- tau_range / (g * rho * S)
-  qs_mpm <- as.numeric(lapply(R_range,
-                              FUN = mpm,
-                              S = S,
-                              d = d,
-                              g = g,
-                              rho = rho,
-                              rho_s = rho_s))
-  qs_wp <- as.numeric(lapply(R_range,
-                             FUN = wp,
-                             S = S,
-                             d = d,
-                             g = g,
-                             rho = rho,
-                             rho_s = rho_s))
-  qs_yln <- as.numeric(lapply(R_range,
-                              FUN = yln,
-                              S = S,
-                              d = d,
-                              g = g,
-                              rho = rho,
-                              rho_s = rho_s))
-  qs_ec <- as.numeric(lapply(R_range,
-                             FUN = ec,
-                             S = S,
-                             d = d,
-                             d84 = d84,
-                             g = g,
-                             rho = rho,
-                             rho_s = rho_s))
-  qs_eb <- as.numeric(lapply(R_range,
-                             FUN = eb,
-                             S = S,
-                             d = d,
-                             g = g,
-                             rho = rho,
-                             rho_s = rho_s))
-  qs_vr <- as.numeric(lapply(R_range,
-                             FUN = vr,
-                             S = S,
-                             d = d,
-                             g = g,
-                             rho = rho,
-                             rho_s = rho_s))
-  qs_rk <- as.numeric(lapply(R_range,
-                             FUN = rk,
-                             S = S,
-                             d = d,
-                             d84 = d84,
-                             g = g,
-                             rho = rho,
-                             rho_s = rho_s,
-                             rp = T))
-  filt <- qs_mpm > 0
-  graphics::plot(tau_range[filt], qb_conversion(qs_mpm[filt], d),
-                 type = "l",
-                 log = "xy",
-                 main = paste("grain size = ", d*1000, "mm, and gradient =", S, "m/m"),
-                 cex.main = 0.7,
-                 #ylim = c(min(qs_eb, na.rm = T), max(qs_eb, na.rm = T)),
-                 col = "red",
-                 lty = 3,
-                 xlab = expression(tau),
-                 ylab = "bedload flux (m3/s/m)")
-  graphics::lines(tau_range, qb_conversion(qs_wp, d),
-                  col = "darkorange",
-                  lty = 3)
-  graphics::lines(tau_range, qb_conversion(qs_yln, d),
-                  col = "blue")
-  graphics::lines(tau_range, qb_conversion(qs_ec, d),
-                  col = "purple",
-                  lty = 2)
-  graphics::lines(tau_range, qb_conversion(qs_eb, d),
-                  col = "darkred")
-  graphics::lines(tau_range, qb_conversion(qs_vr, d),
-                  lty = 2,
-                  col = "black")
-  #Recking uses d84 instead of d50, so need to adjust for comparison
-  graphics::lines(tau_range, qb_conversion(qs_rk, d84),
-                  lty = 3,
-                  col = "darkgreen")
-  graphics::legend("bottomright",
-                   inset = 0.02,
-                   legend = c("Eaton & Church",
-                              "Einstein & Brown",
-                              "Meyer Peter & Muller",
-                              "Recking",
-                              "Van Rijn",
-                              "Wong & Parker",
-                              "Yalin"),
-                   lty = c(2, 1, 3, 3, 2, 3, 1),
-                   col = c("purple",
-                           "darkred",
-                           "red",
-                           "darkgreen",
-                           "black",
-                           "darkorange",
-                           "blue"),
-                   pch = NA,
-                   cex = 0.7)
-}
+compare_fun <- function(d, S, d84 = 2 * d, g = 9.81, rho = 1000, rho_s = 2650) {
+  # Plots dimensionless bedload transport as a function of bed shear stress for
+  # seven transport equations, over a range of tau from 0.25 to 5 times the
+  # reference critical shear stress (tau_c = 0.05 * g * (rho_s - rho) * d).
+  #
+  # Parameters
+  #
+  # d     : numeric, median grain diameter (m), D50
+  # S     : numeric, channel slope (dimensionless)
+  # d84   : numeric, 84th percentile grain diameter (m). Default 2 * d.
+  #           Used by ec() and rk().
+  # g     : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho   : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s : numeric, sediment density (kg/m^3). Default 2650.
+  #
+  # Returns
+  #
+  # NULL, invisibly. Called for its side effect of producing a plot.
 
+  # --- shear stress and hydraulic radius range ---
+  tau_critical <- 0.05 * g * (rho_s - rho) * d
+  tau_range    <- seq(0.25 * tau_critical, 5 * tau_critical, length.out = 200)
+  R_range      <- tau_range / (g * rho * S)
+
+  # --- evaluate all transport equations over R_range ---
+  compute <- function(fun, grain = d, ...) {
+    as.numeric(lapply(R_range, FUN = fun, S = S, d = grain, g = g,
+                      rho = rho, rho_s = rho_s, ...))
+  }
+
+  qs_mpm <- compute(mpm)
+  qs_wp  <- compute(wp)
+  qs_smt  <- compute(smt)
+  qs_yln <- compute(yln)
+  qs_ec  <- compute(ec,  d84 = d84)
+  qs_eb  <- compute(eb)
+  qs_vr  <- compute(vr)
+  qs_rk  <- compute(rk,  d84 = d84, rp = TRUE)
+
+  # --- plot: filter to positive mpm values for axis range ---
+  filt <- qs_mpm > 0
+  plot(tau_range[filt], qb_conversion(qs_mpm[filt], d),
+       type  = "l",
+       log   = "xy",
+       main  = paste("grain size =", d * 1000, "mm, gradient =", S, "m/m"),
+       col   = "red",
+       lty   = 3,
+       xlab  = expression(tau ~ (Pa)),
+       ylab  = expression("bedload flux" ~ (m^3/s/m)),
+       cex.main = 0.7)
+
+  lines(tau_range, qb_conversion(qs_wp,  d),    col = "darkorange", lty = 3)
+  lines(tau_range, qb_conversion(qs_smt,  d),    col = "darkorange", lty = 1)
+  lines(tau_range, qb_conversion(qs_yln, d),    col = "blue")
+  lines(tau_range, qb_conversion(qs_ec,  d),    col = "purple",     lty = 2)
+  lines(tau_range, qb_conversion(qs_eb,  d),    col = "darkred")
+  lines(tau_range, qb_conversion(qs_vr,  d),    col = "black",      lty = 2)
+  lines(tau_range, qb_conversion(qs_rk,  d84),  col = "darkgreen",  lty = 3)
+
+  legend("bottomright",
+         inset  = 0.02,
+         legend = c("Eaton & Church", "Einstein-Brown", "Meyer-Peter & Müller",
+                    "Recking", "Van Rijn", "Wong & Parker", "Smart", "Yalin"),
+         col    = c("purple", "darkred", "red", "darkgreen", "black", "darkorange","darkorange", "blue"),
+         lty    = c(2, 1, 3, 3, 2, 3, 1, 1),
+         pch    = NA,
+         cex    = 0.7)
+
+  invisible(NULL)
+  # NOTE: code cleaned up using CLAUDE AI, but performance validated against previous TR'd version of the equation
+}
 
 
 #' Load cross section data
@@ -781,6 +920,67 @@ estimate_capacity <- function(xs_hyd, Q, t, tc = 0.08, mkplt = FALSE){
 
 ####NEW FUNCTIONS ADDED MAY 2025 ############
 
+#' Estimating bedload transport using Smart (1984)
+#'
+#' This function uses the Smart (1984) equation to estimate the dimensionless
+#' bedload flux for steep channels (slopes 3-25 percent). The equation extends
+#' Meyer-Peter & Müller to steep slopes by incorporating an explicit slope
+#' term and a grain size non-uniformity factor. It is appropriate for coarse
+#' sediment (d > 0.4 mm) in steep gravel- or cobble-bed channels.
+#'
+#' @param R hydraulic radius for the flow (m)
+#' @param S gradient of the water surface slope (m/m)
+#' @param d median bed sediment grain diameter (m)
+#' @param d90_30 ratio of the 90th and the 30th percentile of the gsd. Defaults to 3.4 (from a log normal distribution)
+#' @param d84 84th percentile diameter of bed sediment (m). Defaults to 2 * d
+#' @param t_crit critical dimensionless shear stress. Defaults to 0.047
+#' @param g the acceleration of gravity. defaults to 9.81 m/s2
+#' @param rho fluid density. Defaults to 1000 kg/m3
+#' @param rho_s sediment density. Defaults to 2650 kg/m3
+#' @param a1 constant fit by Ferguson (2007). Defaults to 6.5
+#' @param a2 constant fit by Ferguson (2007). Defaults to 2.5
+#' @param U mean flow velocity. Defaults to flows calculated using Ferguson (2007)
+
+#' @export
+smt <- function(R, S, d,
+                d90_30 = 3.4,
+                d84    = 2*d,
+                t_crit = 0.047,
+                g      = 9.81,
+                rho    = 1000,
+                rho_s  = 2650,
+                a1     = 6.5,
+                a2     = 2.5,
+                U      = u_ferg(R, S, d84, a1, a2, g)) {
+  # Computes dimensionless bedload transport rate using the
+  # Meyer-Peter & Müller (1948) equation.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # d      : numeric, grain diameter (m), typically D50
+  # t_crit : numeric, critical Shields parameter (dimensionless). Default 0.047.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  #
+  # Returns
+  #
+  # numeric, dimensionless bedload transport rate (q_star).
+  #   Returns 0 when shear stress is below the critical threshold.
+
+  tau <- tau_1D(R, S, g, rho)
+  t_s <- t_star(tau, d, g, rho, rho_s)
+
+  if (t_s <= t_crit) return(0)
+  C <- U / (sqrt(g * R * S))  #calculate the flow resistance term
+
+  #calculate Smart's (1984) dimensionless transport rate using Eq. 8 from
+  #the paper
+  4 * (d90_30)^0.2 * S^0.6 * C * sqrt(t_s) * (t_s - t_crit)
+  #Not yet formally reviewed, but performs very similarly to Wong and Parker at 0.02 m/m & 50 mm d50
+}
 
 #' Integrating  Wilcock and Crowe (2003) over a hydrograph
 #'
@@ -862,41 +1062,64 @@ fractional_capacity <-function(hydrograph, xs_data, S, gsd, Fsand, g = 9.81, rho
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-wc <- function(R, S, gsd, Fsand, g = 9.81, rho = 1000, rho_s = 2650){
-  tau <- tau_1D(R, S, g, rho)
-  u_star <- (tau / rho) ^ 0.5
+wc <- function(R, S, gsd, Fsand, g = 9.81, rho = 1000, rho_s = 2650) {
+  # Computes fractional bedload transport rates using the
+  # Wilcock & Crowe (2003) surface-based mixture transport equation.
+  #
+  # Parameters
+  #
+  # R      : numeric, hydraulic radius (m)
+  # S      : numeric, channel slope (dimensionless)
+  # gsd    : data frame describing the surface grain size distribution, with columns:
+  #            Di  - grain size (mm)
+  #            Fi  - fraction of surface area in each size class
+  #            cpf - cumulative proportion finer (0-1)
+  #            dm  - geometric mean grain size for each fraction (mm)
+  # Fsand  : numeric, proportion of sand on the bed surface (0-1).
+  #            Used to compute the reference Shields stress via t_ref_star().
+  #            Can be estimated from bank erosion probability or proximity to
+  #            sandy sediment sources; replaces the commented-out approx() call.
+  # g      : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho    : numeric, fluid density (kg/m^3). Default 1000.
+  # rho_s  : numeric, sediment density (kg/m^3). Default 2650.
+  #
+  # Returns
+  #
+  # A copy of gsd with three additional columns:
+  #   Wi  - dimensionless transport parameter W* for each size fraction
+  #   qbi - volumetric transport rate per unit width (m^2/s) for each fraction
+  #   Li  - fractional contribution of each size class to total transport (0-1)
 
-  #find some grain size statistics
-  d50 <- approx(x = gsd$cpf, y = gsd$Di, xout = 0.5)[[2]] #surface median size
+  tau    <- tau_1D(R, S, g, rho)
+  u_star <- sqrt(tau / rho)
 
-  #Fsand <- approx(x = gsd$Di, y = gsd$cpf, xout = 2, rule = 2)[[2]] #proportion of sand on surface
-  # dropped in favour of user-specified value, can be inferred from P(bank erosion), proximity of sandy terraces etc
+  # --- grain size statistics ---
+  d50 <- approx(x = gsd$cpf, y = gsd$Di, xout = 0.5)[[2]]  # surface median (mm)
 
-  #calculate entrainment stress for all sizes
+  # --- size-specific critical shear stress ---
   shields_50 <- t_ref_star(Fsand)
+  b          <- 0.67 / (1 + exp(1.5 - gsd$dm / d50))
+  tr_i       <- g * shields_50 * (rho_s - rho) * (gsd$dm / 1000) * (gsd$dm / d50)^b
 
-  b <- 0.67 / (1 + exp(1.5 - gsd$dm/d50))
-  tr_i <- g * shields_50 * (rho_s - rho) * (gsd$dm / 1000) * (gsd$dm / d50) ^ b
+  # --- dimensionless transport parameter W* (two-regime, Wilcock & Crowe 2003) ---
+  phi  <- tau / tr_i
+  W_i  <- ifelse(phi < 1.35,
+                 0.002 * phi^7.5,
+                 14 * (1 - 0.895 / sqrt(phi))^4.5)
 
-  #calculate the dimensionless transport rate
-  phi <- tau / tr_i
-  W_i <- 0.002 * phi ^ 7.5  #this applies when phi < 1.35
-  higher <- phi > 1.35
-  W_i[higher] <- 14 * (1 - (0.895 / sqrt(phi[higher]))) ^ 4.5
-
-  #calculate the volumetric transport rate
+  # --- volumetric transport rate per unit width for each fraction ---
   qb_i <- W_i * gsd$Fi * u_star^3 / (g * (rho_s / rho - 1))
-  L_i <- qb_i / sum(qb_i)
 
-  # build an output
-  df <- gsd
-  df$Wi <- c(W_i)
-  df$qbi <- c(qb_i)
-  df$Li <- c(L_i)
+  # --- fractional contribution to total transport ---
+  L_i  <- qb_i / sum(qb_i)
 
-  return(df)
+  # --- append results to gsd and return ---
+  df      <- gsd
+  df$Wi   <- W_i
+  df$qbi  <- qb_i
+  df$Li   <- L_i
+  df
 }
-
 
 
 #' Estimating reference dimensionless shear stress for Wilcock & Crowe (2003)
@@ -953,31 +1176,63 @@ wolman_gsd <- function(Di, counts){
 #' @param sp (optional) the standard deviation of the log-normal distribution (in phi units), default of 1 gives a D84 twice the D50
 #' @param Map (optional) LOGICAL, when TRUE, the distribution is graphed
 #' @export
-sim_gsd <- function(D50, sp = 1, Map = FALSE){
+sim_gsd <- function(D50, sp = 1, plot_gsd = FALSE) {
+  # Simulates a surface grain size distribution by sampling from a log-normal
+  # distribution in phi units, then binning into half-phi size classes.
+  #
+  # Parameters
+  #
+  # D50      : numeric, median grain diameter (mm).
+  # sp       : numeric, spread of the distribution in phi units (analogous to
+  #              sorting). Default 1.
+  # plot_gsd : logical, if TRUE plots the cumulative grain size distribution.
+  #              Default FALSE. Renamed from 'Map' for clarity.
+  #
+  # Returns
+  #
+  # A data frame with one row per size class, sorted from coarse to fine:
+  #   Di  - upper bound of size class (mm)
+  #   cpf - cumulative proportion finer (0-1)
+  #   dm  - geometric mean grain size of size class (mm)
+  #   Fi  - proportion of distribution in size class (0-1)
 
-    dist_mean <- log2(D50)
-    grain_sizes <- 2 ^ rnorm(1e+05, mean = dist_mean, sd = sp)
-    lim_upper <- 2^(dist_mean + 2.5 * sp)
-    lim_lower <- 2^(dist_mean - 2.5 * sp)
-    grain_sizes <- grain_sizes[-which(grain_sizes > lim_upper)]
-    grain_sizes <- grain_sizes[-which(grain_sizes < lim_lower)]
-    phi_sizes <- 2^seq(dist_mean - 2.5 * sp, dist_mean + 2.5 *
-                        sp, 0.25 * sp)
-    grain_dist <- hist(grain_sizes, breaks = phi_sizes, plot = F)
-    p <- grain_dist$counts / sum(grain_dist$counts)
-    cdf <- cumsum(p)
-    results <- data.frame(grain_dist$breaks[-1], cdf, grain_dist$mids,
-                         p)
-    colnames(results) = c("Di", "cpf", "dm", "Fi")
-    if (Map == TRUE) {
-      par(mfcol = c(1, 1))
-      plot(results$size_class, results$cdf, type = "o", log = "x",
-           xlim = c(lim.lower, lim.upper), xlab = "Grain size (mm)",
-           ylab = "Proportion Finer")
-    }
-    results <- results[order(-results$Di),]
-    return(results)
+  # --- phi-space mean and truncation limits (+/- 2.5 phi) ---
+  phi_mean  <- log2(D50)
+  lim_lower <- 2^(phi_mean - 2.5 * sp)
+  lim_upper <- 2^(phi_mean + 2.5 * sp)
+
+  # --- simulate and truncate grain size sample ---
+  grain_sizes <- 2^rnorm(1e5, mean = phi_mean, sd = sp)
+  grain_sizes <- grain_sizes[grain_sizes >= lim_lower & grain_sizes <= lim_upper]
+
+  # --- bin into half-phi size classes ---
+  phi_breaks  <- 2^seq(phi_mean - 2.5 * sp, phi_mean + 2.5 * sp, by = 0.25 * sp)
+  grain_dist  <- hist(grain_sizes, breaks = phi_breaks, plot = FALSE)
+
+  # --- compute proportions and cumulative distribution ---
+  p   <- grain_dist$counts / sum(grain_dist$counts)
+  cdf <- cumsum(p)
+
+  # --- assemble output, sorted coarse to fine ---
+  results <- data.frame(
+    Di  = grain_dist$breaks[-1],
+    cpf = cdf,
+    dm  = grain_dist$mids,
+    Fi  = p
+  )
+  results <- results[order(-results$Di), ]
+
+  # --- optional plot ---
+  if (plot_gsd) {
+    plot(results$Di, results$cpf,
+         type = "o", log  = "x",
+         xlim = c(lim_lower, lim_upper),
+         xlab = "Grain size (mm)",
+         ylab = "Proportion finer")
   }
+
+  results
+}
 
 
 
@@ -1075,48 +1330,71 @@ make_trapezoid <- function(w_top, w_bot, H_bank, Z_fp, dx = 0.1){
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-gbem <- function(Q, t, n, D84, D50, W, S, H = 0, fun = "ec", g = 9.81, rho_s = 2650, rho = 1000) {
+gbem <- function(Q, t, n, D84, D50, W, S, H = 0, fun = "ec",
+                 g = 9.81, rho_s = 2650, rho = 1000) {
+  # Estimates lateral channel widening and updated flow depth for a single
+  # flood event using the gravel-bed erosion model (GBEM) framework.
+  # Widening is limited by the lesser of the geotechnically predicted widening
+  # and the volume of bedload transport in the bank zone.
+  #
+  # Parameters
+  #
+  # Q     : numeric, peak discharge (m^3/s)
+  # t     : numeric, flood duration (hours)
+  # n     : numeric, Manning's roughness coefficient
+  # D84   : numeric, 84th percentile grain diameter (m). Used for bank
+  #           stability threshold.
+  # D50   : numeric, median grain diameter (m). Used for bedload transport.
+  # W     : numeric, current channel width (m)
+  # S     : numeric, channel slope (dimensionless)
+  # H     : numeric, bank height (m). Default 0.
+  # fun   : character, bedload transport equation to use. Default "ec"
+  #           (Eaton & Church 2011). Passed to find_q_b().
+  # g     : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho_s : numeric, sediment density (kg/m^3). Default 2650.
+  # rho   : numeric, fluid density (kg/m^3). Default 1000.
+  #
+  # Returns
+  #
+  # A named numeric vector with four elements:
+  #   dw      - predicted channel widening (m); 0 if channel is stable
+  #   depth   - updated flow depth after widening (m)
+  #   v_b     - volumetric bedload transport during event (m^3/m width)
+  #   d_crit  - critical flow depth for bank erosion threshold (m)
 
-  #step 0: define constants and sub functions
-  shields_c84 <- 0.02
-  sheilds_c50 <- t_crit_soul(D50, rho, rho_s, g)
-  hour_2_seconds <- 60 * 60
-  travel_angle <- 30 #the fahrboschung angle for small failures in sand/gravel (ranges from 30 to 35 most likely)
-  tol = 0.001
+  # --- constants ---
+  shields_c84    <- 0.02
+  sec_per_hour   <- 3600
+  travel_angle   <- 30   # fahrboschung angle for small failures in sand/gravel (degrees)
 
-  #step 1: calculate the critical threshold for channel widening
-  t_c84 <- shields_c84 * g * (rho_s - rho) * D84
-  d_crit <- find_d_crit(H, t_c84, S)
-  v_crit <- d_crit^(2/3) * S^(1/2) / n
+  # --- step 1: critical threshold for channel widening ---
+  t_c84   <- shields_c84 * g * (rho_s - rho) * D84
+  d_crit  <- find_d_crit(H, t_c84, S)
+  v_crit  <- d_crit^(2/3) * S^0.5 / n
 
-  #step 2: determine if channel will widen and calculate transp, widening
-  d <- ( (n * Q) / (W * S^(1/2)) )^(3/5)
-  stable <- d < d_crit
-  if(stable) {
-    dw <- 0
-    q_b <- find_q_b(d, S, D50, D84, fun, g, rho, rho_s)
-    v_b <- q_b * t * hour_2_seconds
-  } else{
+  # --- step 2: flow depth at current width and bedload transport volume ---
+  d    <- ((n * Q) / (W * S^0.5))^(3/5)
+  q_b  <- find_q_b(d, S, D50, D84, fun, g, rho, rho_s)
+  v_b  <- q_b * t * sec_per_hour
+
+  # --- step 3: widening, limited by transport volume in bank zone ---
+  # if stable, no widening; otherwise widen to stable width, capped by
+  # available transport volume: dw = v_b / tan(travel_angle), derived from
+  # the bank zone width being proportional to bank height via the fahrboschung
+  # angle (see Hassan et al. 1992)
+  dw <- if (d < d_crit) {
+    0
+  } else {
     W_stable <- Q / (d_crit * v_crit)
-    dw_pred <- W_stable - W
-    q_b <- find_q_b(d, S, D50, D84, fun, g, rho, rho_s)
-    v_b <- q_b * t * hour_2_seconds
-    dw <- min(c(dw_pred, v_b/tan(travel_angle * pi / 180) ))
-    #important note: the relevant volume of transport is transport in the bank
-    #zone.  We can define the width of the bank zone as having a width that is
-    #proportional to the bank height using the travel angel for small landslides
-    #  so V_b = v_b * d_crit / tan(travel_angle).  To figure out
-    #how much bank erosion could occur, we divide that volume by the bank
-    #height so dw = v_b / tan(travel_angle)
+    min(W_stable - W, v_b / tan(travel_angle * pi / 180))
   }
-  #step 3: update width and calculate flow depth
-  Wn <- W + dw
-  depth <- ( (n * Q) / (Wn * S^(1/2)) )^(3/5)
 
-  #step 4: return the predicted widening, widening constrained by vb, transp. volume, stable depth
-  return(c(dw, depth, v_b, d_crit))
+  # --- step 4: updated width and flow depth ---
+  W_new <- W + dw
+  depth <- ((n * Q) / (W_new * S^0.5))^(3/5)
+
+  c(dw = dw, depth = depth, v_b = v_b, d_crit = d_crit)
 }
-
 
 
 #' Estimate the cumulative bank erosion during a flood hydrograph in an incized channel
@@ -1338,15 +1616,29 @@ est_mu <- function(H, d){
 #' @param D50 median bed sediment grain diameter (m)
 #' @param d flow depth (m)
 #' @export
-crit_power <- function(D50, d, use_ferguson = FALSE){
-  if(use_ferguson) {
-    crit_p <- 2860 * (D50)^1.5 * log10(12 * d / D50)
-  } else {
-    crit_p <- 0.130 * (D50 * 1000) ^ 1.438
-  }
+crit_power <- function(D50, d, use_ferguson = FALSE) {
+  # Estimates the critical unit stream power required to initiate sediment
+  # transport, using one of two formulations.
+  #
+  # Parameters
+  #
+  # D50          : numeric, median grain diameter (m)
+  # d            : numeric, flow depth (m). Only used when use_ferguson = TRUE.
+  # use_ferguson : logical, if TRUE uses the Ferguson (2005) depth-dependent
+  #                  formulation; if FALSE uses the empirical regression of
+  #                  Hassan et al. (1992). Default FALSE.
+  #
+  # Returns
+  #
+  # numeric, critical unit stream power (W/m^2).
 
-  return(crit_p)
+  if (use_ferguson) {
+    2860 * D50^1.5 * log10(12 * d / D50)
+  } else {
+    0.130 * (D50 * 1000)^1.438
+  }
 }
+
 
 #' Calculating the cross section average unit stream power
 #'
@@ -1378,20 +1670,46 @@ unit_power <- function(q, S, g = 9.81, rho = 1000){
 #' @param g the acceleration of gravity. defaults to 9.81 m/s2
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @export
-step_length <- function(D50, q, d, S, dt, flashy = FALSE, use_ferguson = TRUE, g = 9.81, rho = 1000){
-  # equation from Hassan et al. 1992 Hassan, M.A., M. Church, and P.J. Ashworth.
-  # 1992. Virtual rate and mean distance of travel of individual clasts in gravel
-  # -bed channels. Earth Surface Processes and Land forms 17(6):617–627.
-  if(flashy) {
-    #use the equation from Hassan et al. 1992 for short flashy events using peak
-    #unit power
-    l_p <- 0.0283 * (unit_power(max(q, na.rm = T), S, g, rho) - crit_power(D50, d, use_ferguson))^1.44
+step_length <- function(D50, q, d, S, dt, flashy = FALSE, use_ferguson = TRUE,
+                        g = 9.81, rho = 1000) {
+  # Estimates the virtual travel distance of a representative grain over a
+  # flood event, using the relationships of Hassan et al. (1992).
+  #
+  # Hassan, M.A., M. Church, and P.J. Ashworth. 1992. Virtual rate and mean
+  # distance of travel of individual clasts in gravel-bed channels. Earth
+  # Surface Processes and Landforms 17(6): 617-627.
+  #
+  # Parameters
+  #
+  # D50          : numeric, median grain diameter (m)
+  # q            : numeric vector, unit discharge time series (m^2/s)
+  # d            : numeric, flow depth (m), used in crit_power()
+  # S            : numeric, channel slope (dimensionless)
+  # dt           : numeric vector, time step durations (s), same length as q
+  # flashy       : logical, if TRUE uses the peak unit stream power form
+  #                  (suitable for short, flashy events); if FALSE integrates
+  #                  virtual velocity over the full hydrograph. Default FALSE.
+  # use_ferguson : logical, passed to crit_power() to select the resistance
+  #                  equation used for critical stream power. Default TRUE.
+  # g            : numeric, gravitational acceleration (m/s^2). Default 9.81.
+  # rho          : numeric, fluid density (kg/m^3). Default 1000.
+  #
+  # Returns
+  #
+  # numeric, estimated virtual travel distance (m) over the flood event.
+
+  omega_crit <- crit_power(D50, d, use_ferguson)
+
+  if (flashy) {
+    # peak unit stream power form (Hassan et al. 1992, eq. for flashy events)
+    omega_peak <- unit_power(max(q, na.rm = TRUE), S, g, rho)
+    0.0283 * (omega_peak - omega_crit)^1.44
   } else {
-    #integrate the virtual velocity over the hydrograph
-    virt_v <- 0.00188 * (unit_power(q, S, g, rho) - crit_power(D50, d, use_ferguson))^1.62
-    l_p <- sum(virt_v * dt, na.rm = T)
+    # integrate virtual velocity over the hydrograph
+    omega    <- unit_power(q, S, g, rho)
+    virt_v   <- 0.00188 * (omega - omega_crit)^1.62
+    sum(virt_v * dt, na.rm = TRUE)
   }
-  return(l_p)
 }
 
 
@@ -1782,4 +2100,116 @@ flow_regime <- function(station, window = 1){
          pch = c(19,NA),
          cex = 1.0,
          col = c("darkorange", 'black'))
-  }
+}
+
+
+#' Bedload transport for steep channels using Smart & Jaeggi (1983) / Smart (1984)
+#'
+#' Computes the dimensionless bedload transport rate for steep channels using
+#' the Smart (1984) uniform-sediment equation, calibrated for slopes between
+#' 0.5% and 20% and grain sizes greater than 0.4 mm. The critical Shields
+#' parameter is estimated using the Soulsby & Whitehouse (1997) relationship,
+#' making it suitable for sand as well as gravel. The Chezy flow resistance
+#' factor is computed internally using the Ferguson (2007) variable power
+#' equation, consistent with \code{u_ferg()}, and non-dimensionalised for
+#' compatibility with \code{qb_conversion()}.
+#'
+#' @param R hydraulic radius for the flow (m)
+#' @param S channel slope (m/m)
+#' @param d median bed sediment grain diameter, D50 (m)
+#' @param d84 84th percentile grain diameter of bed sediment (m). Used in the
+#'   Ferguson resistance equation. Defaults to 2 * d.
+#' @param t_crit critical Shields parameter (dimensionless). Defaults to the
+#'   value returned by \code{t_crit_soul(d, rho, rho_s, g, kv)}, which accounts
+#'   for grain-size-dependent entrainment thresholds.
+#' @param a1 Ferguson resistance coefficient for the smooth/deep flow limit.
+#'   Defaults to 6.5.
+#' @param a2 Ferguson resistance coefficient for the rough/shallow flow limit.
+#'   Defaults to 2.5.
+#' @param g acceleration due to gravity (m/s^2). Defaults to 9.81.
+#' @param rho fluid density (kg/m^3). Defaults to 1000.
+#' @param rho_s sediment density (kg/m^3). Defaults to 2650.
+#' @param kv kinematic viscosity of the fluid (m^2/s). Defaults to 1e-6.
+#'   Passed to \code{t_crit_soul()} when using the default critical threshold.
+#' @return A numeric value giving the dimensionless bedload transport rate
+#'   (q_star) in the Einstein normalisation, compatible with
+#'   \code{qb_conversion()}. Returns 0 when the Shields stress is at or below
+#'   the critical threshold.
+#' @references
+#'   Smart, G.M. (1984). Sediment transport formula for steep channels.
+#'   \emph{Journal of Hydraulic Engineering}, 110(3), 267--276.
+#'
+#'   Smart, G.M. and Jaeggi, M.N.R. (1983). Sediment transport on steep slopes.
+#'   \emph{Mitteilungen der Versuchsanstalt fur Wasserbau, Hydrologie und
+#'   Glaziologie}, ETH Zurich, No. 64.
+#'
+#'   Soulsby, R.L. and Whitehouse, R.J.S. (1997). Threshold of sediment motion
+#'   in coastal environments. \emph{Proceedings of the Pacific Coasts and Ports
+#'   Conference}, Christchurch, New Zealand, 149--154.
+#' @seealso \code{\link{u_ferg}}, \code{\link{t_crit_soul}},
+#'   \code{\link{tau_1D}}, \code{\link{t_star}}, \code{\link{qb_conversion}}
+#' @export
+sj <- function(R, S, d, d84 = 2 * d,
+               t_crit = t_crit_soul(d, rho, rho_s, g, kv),
+               a1 = 6.5, a2 = 2.5,
+               g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-6) {
+
+  tau <- tau_1D(R, S, g, rho)
+  t_s <- t_star(tau, d, g, rho, rho_s)
+
+  if (t_s <= t_crit) return(0)
+
+  Gs  <- (rho_s - rho) / rho
+
+  # dimensional Chezy coefficient (m^0.5/s), then non-dimensionalised
+  # by sqrt(Gs * g * d) for compatibility with the Einstein q_star convention
+  U   <- u_ferg(R, S, d84, a1, a2, g)
+  C   <- (U / sqrt(R * S)) / sqrt(Gs * g * d)
+
+  4.2 * S^0.6 * C * (t_s - t_crit) * sqrt(t_s)
+}
+
+#' Total sediment transport using Engelund & Hansen (1967)
+#'
+#' Computes the dimensionless total sediment transport rate (bedload plus
+#' suspended load) using the Engelund & Hansen (1967) equation. Can be used
+#' as a drop-in replacement for bedload-only functions in this package,
+#' but note that it will overestimate bedload transport as it includes the
+#' suspended load component. Most appropriate for sand-bed channels with
+#' substantial suspended load (d50 between 0.19 and 0.93 mm).
+#'
+#' @param R hydraulic radius for the flow (m)
+#' @param S channel slope (m/m)
+#' @param d median bed sediment grain diameter, D50 (m)
+#' @param d84 84th percentile grain diameter of bed sediment (m). Used in the
+#'   Ferguson resistance equation to compute the friction factor. Defaults to
+#'   2 * d.
+#' @param a1 Ferguson resistance coefficient for the smooth/deep flow limit.
+#'   Defaults to 6.5.
+#' @param a2 Ferguson resistance coefficient for the rough/shallow flow limit.
+#'   Defaults to 2.5.
+#' @param g acceleration due to gravity (m/s^2). Defaults to 9.81.
+#' @param rho fluid density (kg/m^3). Defaults to 1000.
+#' @param rho_s sediment density (kg/m^3). Defaults to 2650.
+#' @return A numeric value giving the dimensionless total sediment transport
+#'   rate (q_star). No critical threshold — returns a non-zero value for any
+#'   positive shear stress. Note that this includes suspended load and will
+#'   overestimate bedload transport when used in a bedload-only context.
+#' @references
+#'   Engelund, F. and Hansen, E. (1967). \emph{A Monograph on Sediment
+#'   Transport in Alluvial Streams}. Teknisk Forlag, Copenhagen, Denmark.
+#' @seealso \code{\link{u_ferg}}, \code{\link{tau_1D}}, \code{\link{t_star}}
+#' @export
+eh <- function(R, S, d, d84 = 2 * d, a1 = 6.5, a2 = 2.5,
+               g = 9.81, rho = 1000, rho_s = 2650) {
+
+  tau <- tau_1D(R, S, g, rho)
+  t_s <- t_star(tau, d, g, rho, rho_s)
+
+  # Darcy-Weisbach friction factor from Ferguson velocity equation
+  # f = 8 * g * R * S / U^2
+  U   <- u_ferg(R, S, d84, a1, a2, g)
+  f   <- 8 * g * R * S / U^2
+
+  0.05 / f * t_s^2.5
+}

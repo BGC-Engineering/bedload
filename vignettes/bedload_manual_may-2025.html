@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Bedload Manual</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Bedload Manual</h1>
+
+
+
+<div id="background" class="section level1">
+<h1>Background</h1>
+<p>The bedload package was created to automate the performance of
+various analyses that come up in applied geoscience. The philosophy of
+the package is to construct flexible tools that can be easily
+incorporated into data analysis workflows without a detailed background
+in R programming. It relies on other packages for importing and
+analyzing various types of environmental data that are used when
+analyzing questions related to bed material transport.</p>
+</div>
+<div id="analysis-functions" class="section level1">
+<h1>Analysis Functions</h1>
+<p>The analysis functions in this section are designed to perform a
+range of commonly executed analyses. They are built with various
+functions from the subsequent sections. The typical workflows are
+presented with each analysis function.</p>
+<p>New analysis functions will continue to be added to the
+<code>bedload</code> package as new use cases are developed.</p>
+<hr />
+<div id="compare_fun" class="section level2">
+<h2>compare_fun</h2>
+<p>This function compares the transport functions for a specified grain
+size and channel gradient over a reasonable range of shear stress values
+using the default values for all functions.</p>
+<div id="usage" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>compare_fun(d, S, d84 = 2 * d, g = 9.81, rho = 1000, rho_s = 2650)</code></p>
+</div>
+<div id="arguments" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d84</code> 84th percentile diameter of bed sediment (m).
+Defaults to <code>2 * d</code></p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function is intended to visualize how the various transport
+functions compare with one another for a given grain size and energy
+gradient. The results depend in large part on the relative roughness of
+the stream be analysed, which is implicit in the choice of grain size
+and gradient.</p>
+</div>
+<div id="output" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function simply produces a graph of the calculated volumetric
+bedload transport rate per unit width for a specified range of
+dimensionless shear stress values.</p>
+</div>
+<div id="examples" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>Here is an example for a steep stream with high relative
+roughness.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">compare_fun</span>(<span class="at">d =</span> <span class="fl">0.05</span>, </span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>            <span class="at">S =</span> <span class="fl">0.02</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>And here is an example for a stream with much lower gradient and
+lower relative roughness.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">compare_fun</span>(<span class="at">d =</span> <span class="fl">0.05</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>            <span class="at">S =</span> <span class="fl">0.0002</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="see-also" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>mpm()</code>, <code>wp()</code>, <code>eb()</code>,
+<code>yln()</code>, <code>vr()</code>, <code>ec()</code>,
+<code>rk()</code></p>
+<hr />
+</div>
+</div>
+<div id="estimate_hydraulics" class="section level2">
+<h2>estimate_hydraulics</h2>
+<p>this function estimates hydraulic properties at regular WSE elevation
+intervals, effectively building a rating curve and mapping out the
+at-a-station hydraulic geometry for the cross section being analyzed.
+These data can be used to interpolate values for target flow values. The
+calculations include estimates of the bedload flux calculated using one
+of several bedload transport equations.</p>
+<div id="usage-1" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>estimate_hydraulics(xs_data, S, d, d84 = 2 * d, ymax = 1.5, ...</code>
+<code>dx = 0.05, t_crit = t_crit_soul(d), g = 9.81, rho = 1000, ...</code>
+<code>rho_s = 2650, a1 = 6.5, a2 = 2.5, kv = 1e-06, fun = &quot;ec&quot;, rp = FALSE)</code></p>
+</div>
+<div id="arguments-1" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>xs_data</code> a data frame containing variables
+<code>dist</code> (distances) and <code>z</code> (elevations)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>d84</code> 84th percentile diameter of bed sediment (m).
+Defaults to 2 * d</p></li>
+<li><p><code>ymax</code> the maximum flow depth to model, measured at
+the thalweg, defaults to 3.5 m</p></li>
+<li><p><code>dx</code> the increment by which to change stage. defaults
+to 0.05 m</p></li>
+<li><p><code>t_crit</code> critical dimensionless shear stress,
+calculated using the Soulsby (1997) equation</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>a1</code> constant fit by Ferguson (2007). Defaults to
+6.5</p></li>
+<li><p><code>a2</code> constant fit by Ferguson (2007). Defaults to
+2.5</p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to
+1e-6</p></li>
+<li><p><code>fun</code> choice of bedload function: ‘eb’,‘ec’, ‘rk’,
+‘mpm’, ‘vr’,‘wp’, ‘yln’. Defaults to ‘ec’</p></li>
+<li><p><code>rp</code> option for ‘rk’ select equation suited to riffle
+pool morphology, default is FALSE</p></li>
+</ul>
+</div>
+<div id="details-1" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses the Ferguson (2007) flow resistance equation to
+calculate the velocity for a sequence of water depths at a given cross
+section. It builds a dataset of hydraulic geometry values (mean depth,
+water surface width, wetted perimeter), and cross section-average
+hydraulic parameters (velocity, shear stress, bedload transport
+capacity) for a range of discharges.</p>
+</div>
+<div id="output-1" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function produces a data frame containing estimates of the mean
+area of flow (area),flow width (width), wetted parameter (perimeter),
+mean flow velocity (velocity), bed load transport capacity (transport),
+water surface elevation (wse), and dimensionless shear stress (t_star)
+for a range of discharge values (flow).</p>
+</div>
+<div id="examples-1" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>To use <code>estimate_hydraulics()</code> it is necessary to have at
+a minimum a topographic cross section, an estimate of the reach-average
+gradient, and an estimate of the mean surface grain size.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>example_section <span class="ot">&lt;-</span> <span class="fu">make_trapezoid</span>(<span class="at">w_top =</span> <span class="dv">10</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                                  <span class="at">w_bot =</span> <span class="dv">5</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                                  <span class="at">H_bank =</span> <span class="fl">1.5</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                                  <span class="at">Z_fp =</span> <span class="dv">100</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">plot</span>(example_section<span class="sc">$</span>dist, example_section<span class="sc">$</span>Z,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;darkgreen&quot;</span>, </span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;distance (m)&quot;</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;elevation (m)&quot;</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>     <span class="at">asp =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>example_slope <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>example_d <span class="ot">&lt;-</span> <span class="fl">0.04</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>example_result <span class="ot">&lt;-</span> <span class="fu">estimate_hydraulics</span>(<span class="at">xs_data =</span> example_section,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                                      <span class="at">S =</span> example_slope,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                                      <span class="at">d =</span> example_d)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">head</span>(example_result)</span></code></pre></div>
+<pre><code>##         flow  area width perimeter  velocity    transport   wse     t_star
+## 1 0.00000000 0.000   5.1  5.116619 0.0000000 0.000000e+00 98.50 0.00000000
+## 2 0.06010608 0.255   5.1  5.116619 0.2357101 0.000000e+00 98.55 0.03775576
+## 3 0.31137738 0.518   5.3  5.349857 0.6011146 1.564795e-10 98.60 0.07335228
+## 4 0.78039976 0.789   5.5  5.583095 0.9890998 6.819252e-08 98.65 0.10706020
+## 5 1.45819648 1.068   5.7  5.816333 1.3653525 8.371025e-07 98.70 0.13910670
+## 6 2.32846026 1.355   5.9  6.049571 1.7184209 3.648415e-06 98.75 0.16968395</code></pre>
+</div>
+<div id="see-also-1" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>load_section()</code>, <code>make_trapezoid()</code>,</p>
+<hr />
+</div>
+</div>
+<div id="estimate_capacity" class="section level2">
+<h2>estimate_capacity</h2>
+<p>this function uses a data frame created by the
+<code>estimate_hydraulics()</code> utility function to approximate the
+volume of bed material that could be transported during a hydrograph. It
+also estimates the geomorphically active volume of transport based on a
+threshold dimensionless shear stress.</p>
+<div id="usage-2" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>estimate_capacity(xs_hyd, Q, t, tc = 0.08, mkplt = FALSE)</code></p>
+</div>
+<div id="arguments-2" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>xs_hyd</code> a data frame created by
+<code>estimate_hydraulics()</code></p></li>
+<li><p><code>Q</code> a vector containing the flows that define the
+hydrograph</p></li>
+<li><p><code>t</code> a vector that contains the corresponding times for
+each Q value (hours)</p></li>
+<li><p><code>tc</code> the threshold dimensionless shear stress for
+channel change</p></li>
+<li><p><code>mkplt</code> option to make a plot of the data, defaults to
+FALSE</p></li>
+</ul>
+</div>
+<div id="details-2" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function first requires the user to create: a data frame using
+the <code>estimate_hydraulics()</code> function; and two vectors that
+define an event hydrograph over which to integrate the sediment
+transport capacity.</p>
+</div>
+<div id="output-2" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function outputs a data frame with the following information:</p>
+<ul>
+<li><code>Qmax</code> peak flow of the hydrograph (cubic meters per
+sec)</li>
+<li><code>vol_transp</code> volume of bedload transported during
+hydrograph (cubic meters)</li>
+<li><code>vol_active</code> volume of bedload transported when shear
+stresses exceeded a user-specified threshold dimensionless shear stress
+for channel change (cubic meters)</li>
+<li><code>width</code> maximum width of the channel during the flood
+(m)</li>
+<li><code>vel</code> maximum cross sectional average flow velocity
+(m/s)</li>
+<li><code>area</code> maximum cross sectional area for flow (m<span class="math inline">\(^2\)</span>/s)</li>
+<li><code>wse</code> maximum water surface elevation during the peak
+flow (m)</li>
+</ul>
+</div>
+<div id="examples-2" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>The code below provides an example of a typical work flow involved in
+making the calculation.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># enter data that you have from the field on the site of interest</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>test_d <span class="ot">&lt;-</span> <span class="fl">0.05</span>  <span class="co"># median surface texture, ideally from a Wolman sample</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>test_d84 <span class="ot">&lt;-</span> <span class="fl">0.12</span>  <span class="co">#the 84th percentile of the bed surface</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>test_slope <span class="ot">&lt;-</span> <span class="fl">0.015</span>  <span class="co"># reach average bed slope from lidar or map</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>top_width <span class="ot">&lt;-</span> <span class="dv">12</span>  <span class="co"># bank to bank width at the site</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>bot_width <span class="ot">&lt;-</span> <span class="fl">3.5</span>  <span class="co"># width of the channel bed </span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>bank_ht <span class="ot">&lt;-</span> <span class="fl">1.2</span>  <span class="co"># vertical high of the floodplain above the channel bed</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co"># make a cross section for analysis based on field measurements</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#(you can also is load_section() to load a more detailt topo profile)</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>test_section <span class="ot">&lt;-</span> <span class="fu">make_trapezoid</span>(<span class="at">w_top =</span> top_width,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>                               <span class="at">w_bot =</span> bot_width,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>                               <span class="at">H_bank =</span> bank_ht,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>                               <span class="at">Z_fp =</span> <span class="dv">100</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co"># use the scs_hydrograph() function to produce a hydrograph</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>test_Q_peak <span class="ot">&lt;-</span> <span class="dv">12</span> <span class="co"># in cubic meters per second</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>test_time_lag <span class="ot">&lt;-</span> <span class="dv">6</span> <span class="co">#in hours</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>test_dt <span class="ot">&lt;-</span> <span class="dv">15</span><span class="sc">/</span><span class="dv">60</span> <span class="co">#produce discharge output every 15 minutes</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>test_hydrograph <span class="ot">&lt;-</span> <span class="fu">scs_hydrograph</span>(<span class="at">Qpeak =</span> test_Q_peak,</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>                                  <span class="at">tpeak =</span> test_time_lag, </span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>                                  <span class="at">dt =</span> test_dt)</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="fu">plot</span>(test_hydrograph)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># now we are ready to run estimate_hydraulics...</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>test_df <span class="ot">&lt;-</span> <span class="fu">estimate_hydraulics</span>(<span class="at">xs_data =</span> test_section,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                               <span class="at">S =</span> test_slope,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                               <span class="at">d =</span> test_d,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                               <span class="at">d84 =</span> test_d84,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                               <span class="at">ymax =</span> bank_ht <span class="sc">*</span> <span class="dv">2</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                               <span class="at">fun =</span> <span class="st">&quot;mpm&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>                               )</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: the optional parameter ymax was assigned a value twice the channel depth...this is not strictly necessary, but ymax controls the range of water depths (and discharge values) analysed by the function, and the next step requires a data frame with discharge values at least as high as the peak flow being assessed.</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co"># now we can run the integration over the hydrograph</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>test_output <span class="ot">&lt;-</span> <span class="fu">estimate_capacity</span>(<span class="at">xs_hyd =</span> test_df, </span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>                                 <span class="at">Q =</span> test_hydrograph<span class="sc">$</span>y,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>                                 <span class="at">t =</span> test_hydrograph<span class="sc">$</span>x)</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">print</span>(test_output)</span></code></pre></div>
+<pre><code>##   Qmax vol_transp vol_active    width      vel     area      wse
+## 1   12   853.1535   780.8163 9.779734 2.041883 5.872919 99.68497</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># and we can show the peak water surface elevation on the cross section to check that things make sense</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">plot</span>(test_section, <span class="at">asp =</span> <span class="dv">2</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> test_output<span class="sc">$</span>wse, <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAV1BMVEUAAAAAADoAAGYAAP8AOpAAZrY6AAA6ADo6AGY6kNtmAABmADpmkJBmtv+QOgCQZgCQkGaQ2/+2ZgC2tma2/7a2///bkDrb////tmb/25D//7b//9v////G3a85AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAHGUlEQVR4nO2djXajNhQGle0mbdxm23VbShze/zlrkIwxlvgQICQfz5yc2DEgxHD1g5GCaWASkzsDpYMgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSLCxIPMw5BK0bXLpQJAAQQIECRAkQJAAQQIECRAkQJAAQQIECRAk2FlQ/EVyboggAYIECBIgSIAgAYIECBIgSIAgAYIECBIgSIAgQSJBXz/sNfu3fzdJLiNpBFXm3b6pL29WJZeTJIK+fvRaqu//rU4uK0kEnQ4fl7d1oJA9tyAiSFEZF0LUQQFOB9uKBeIHQXsnlw4ECbJ2FIu+++Myl7OjaEpW1ObMZXLmBhGJz2vmu58y7yHaXBmXy5nbRKQf7igO76wa66fAKOpzmErQ3AhyegozZHPlfrJ2FJ2bsm7Wm2uu0tVBczuK/bkqxlCvps9R5n6QGUbRtntYwjB6XH5ydxTNsMRnduQt8rkFXfKVv5zdnqrrx7O33zg7w/cllLO+ZR9lIlE/6NrfCVxs/NJyeT2vZl8bc/P5bq9u/+eDvF+eQtC5IxS8CAskFzqBuzAVwskuVl8jkwtUAXswWQmmqoNq8zG53JNcnn6jakYjBZ1+/3n5IPR1fExy4w/vuyGpkQ1ErKCDuZSdBIJGHdnkim7sBHYXLeiPtxcbRCkEjfO8Ygdz8mD3NH06ogV9NEcbRGkENdcISt21ntf9WiCo+Xxr3aQSNPw6Jp0iVTdfV5ydYvfbfRV2NO8JBQ1jP1FtPb8kLxPUBtHf6QQ1ozZ/xX5Cic/+mmWhoDaIkgqa1cIs3HVUyss7ip+/JRWU7Ou0yNgs4Wo+vNKsdiZuv7G1W9GCBm3NNo4WtI9lC2pGvbmV++y/i49Iq3hB8/q7c9OJbxjLF7RNe9ZHT2wiOwsyPfGbrSlng/1GpvAAEdSt3h/dgiu0VSH4IILWHOQquQ8jqLk70CiWV2APJGgcRbfVrhnXw8MPVtyXfCRBTRMfOsMoSpvRMgTdhMhsMyv8PJyg8c2PxPHziIKa2DpohZ2YjBYkKLoq2iWjRQnaEQQJECRAkABBAgQJECRAkCCRoKMxr92UqNAwqicX1M7Q6AaBnA7MWfXQTWapu3FEzHr20d3Bt6M/mDfvgwhS9HXQYObYiuRyQismoB8keIw7qxlJJOgybz443P7JBX3+em7BqnMLfwyN03tuQa7tOp5/HwOTWp5bkBvq2Tb2dBR9XCLo1ZaztcllJVFHse1FtxXR6UAR81KfW7CXCT9PL2jv5NKBIAGCBAgSIEiAIAGCBAgSIEiAIAGCBAgSZBP0MGQSJBMNL8q/ZIvVVyeaXwOCFi/ZYvXViebXgKDFS7ZYfXWi+TUgaPGSLVZfnWh+DQhavGSL1Z8PBAkQJECQAEECBAkQJECQAEECBAkQJECQAEGC7QXV3TBGH904/cA0oaY5+mdYfb4Z4x8RWZmJIf9e7L9hnc7GmM0FtfPJaq+hrx/nj6vA0Z69egXV50/9Y0bbIbfqGQS3nA7t4OXpbNyxtSA7lto7EP/zrT2awAjr08EryCbn28Y+wSI04t9HbR+XMpmNe7YWJHfvj66m+v6nT1A3O8RLtKDavA/mBwSycc/mgrojmvi35v55MOfNvHVQ/e2fQ6DCiC9iw2wFp+OM2VqQPTPh8+N/tl1bkryCqrZUBJ4HE24NgpnrrQQfsXfHzoJqf+XYTYb1CnoJBmQbA59vs1ujZphOIBs+9i1igRPXbeQX1CVkK7bRNnF1rd29W3t+/OxcSVeBjFVuSMq9BntIvqpalWUfTlAoG152bOavD9n04o0gO0XNF5D2TMQ95MKuPZ2NMTt2FEWF4e9Jt7WTf5b+0joocpvtLzWqUOPiClKoUAQuNergdcEx5orBptUKEtkYw8WqAEECBAkQJECQAEECBAkQJECQAEECBAkQJECQAEECBAkQJECQAEECBAkQJECQAEECBAkQJECQAEECBAmKFlS//HT/gdj9HTfqdxNKFzT880bWXiBIUKygdhTNX66ItaPtzUf7O/C8k4SUKqgdHlUbK6gbTFabDyLoih1gd7SCLuPsEHTFPWLJCrJzLBA0pBoKatzTchB05SaCOo6jPtFeFCrIDbceSDm/QdAAO1XFVdJtd6iLprhBrZtQqqCbfpB7GENzpB9UHggSIEiAIAGCBAgSIEiAIAGCBAgSIEiAIAGCBAgSIEiAIAGCBAgSIEiAIAGCBAgSIEiAIMH/k4lx0ChOp40AAAAASUVORK5CYII=" /><!-- --></p>
+</div>
+<div id="see-also-2" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>fractional_capacity()</code>, <code>bank_erode_fp</code>,
+<code>bank_erode_trc()</code></p>
+<hr />
+</div>
+</div>
+<div id="fractional_capacity" class="section level2">
+<h2>fractional_capacity</h2>
+<p>Integrating the Wilcock and Crowe (2003) fractional bedload transport
+function over a hydrograph</p>
+<div id="usage-3" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>fractional_capacity(   hydrograph,   xs_data,   S,   gsd,   Fsand,   g = 9.81,   rho = 1000,   rho_s = 2650 )</code></p>
+</div>
+<div id="arguments-3" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>hydrograph</code> a data frame created by
+<code>scs_hydrograph()</code> (Q in m<span class="math inline">\(^3\)</span>/s and t in hours</p></li>
+<li><p><code>xs_data</code> a data frame containing topography expressed
+as dist (distances) and z (elevations)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>gsd</code> a data frame describing the grain size
+distribution created with function <code>wolman_gsd()</code></p></li>
+<li><p><code>Fsand</code> proportion of the surface that is covered by
+sand sized sediment (affects entrainment, typically varies from 0 to
+0.2)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-3" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function integrates the Wilcock and Crowe transport function
+over a hydrograph for a given cross section to estimate the total
+fractional transport volumes for the flood event. Output includes the
+inputted GSD information for each size class (Di, cpf, Dm, Fi), as well
+as the volumetric transport rate (Qbi), and the fraction of the computed
+bedload in each size class (Li)</p>
+</div>
+<div id="output-3" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function outputs a data frame with the following information:</p>
+<ul>
+<li><code>Di</code> grain size (in mm) of the upper size of each size
+class analyzed</li>
+<li><code>cpf</code> cumulative proportion finer than each size
+<code>Di</code></li>
+<li><code>dm</code> median size for each size class analyzed</li>
+<li><code>Fi</code> fraction of the bed surface in each size class</li>
+<li><code>Qbi</code> volume of sediment transported during the
+hydrograph for each size class</li>
+<li><code>Li</code> the fraction of the total transported volume in each
+size class</li>
+</ul>
+</div>
+<div id="examples-3" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>The function is used in the following example to analyze the
+potential rate and grain size distribution of bedload transport in a
+small gravel bed stream during a flood, using the test data created to
+demonstrate the <code>estimate_capacity</code> function. The
+<code>wolman_gsd()</code> function is used to generate a data frame with
+the necessary grain size distribution information in it to run the
+Wilcock and Crowe model. Alternatively, you can use the
+<code>sim_gsd()</code> function to simulate a log-normal grain size
+distribution.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#example gsd data</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>field_sizes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">23</span>, <span class="dv">32</span>, <span class="dv">45</span>, <span class="dv">64</span>, <span class="dv">91</span>, <span class="dv">128</span>, <span class="dv">181</span>, <span class="dv">256</span>, <span class="dv">360</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>field_counts <span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">15</span>, <span class="dv">18</span>, <span class="dv">20</span>, <span class="dv">17</span>, <span class="dv">11</span>, <span class="dv">9</span>, <span class="dv">5</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>test_gsd <span class="ot">&lt;-</span> <span class="fu">wolman_gsd</span>(<span class="at">Di =</span> field_sizes, </span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>                  <span class="at">counts =</span> field_counts)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#assume a percent sand for the bed surface</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>test_fsand <span class="ot">&lt;-</span> <span class="dv">8</span> <span class="sc">/</span> <span class="dv">100</span>  </span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>test_output <span class="ot">&lt;-</span> <span class="fu">fractional_capacity</span>(<span class="at">hydrograph =</span> test_hydrograph,</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>                                    <span class="at">xs_data =</span> test_section,</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>                                    <span class="at">S =</span> test_slope,</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>                                    <span class="at">gsd =</span> test_gsd,</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>                                    <span class="at">Fsand =</span> test_fsand)</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="fu">print</span>(test_output)</span></code></pre></div>
+<pre><code>##     Di        cpf        dm         Fi          Qbi           Li
+## 10 360 1.00000000 303.57866 0.04716981 5.686614e-06 1.290465e-08
+## 9  256 0.95283019 215.25798 0.08490566 1.330440e-03 3.019171e-06
+## 8  181 0.86792453 152.21038 0.10377358 1.555404e-01 3.529683e-04
+## 7  128 0.76415094 107.92590 0.16037736 6.650807e+00 1.509269e-02
+## 6   91 0.60377358  76.31514 0.18867925 3.801620e+01 8.627024e-02
+## 5   64 0.41509434  53.66563 0.16981132 8.688477e+01 1.971678e-01
+## 4   45 0.24528302  37.94733 0.14150943 1.341123e+02 3.043413e-01
+## 3   32 0.10377358  27.12932 0.06603774 9.682496e+01 2.197251e-01
+## 2   23 0.03773585  19.18333 0.03773585 7.801819e+01 1.770469e-01
+## 1   16 0.00000000  16.00000 0.00000000 0.000000e+00 0.000000e+00</code></pre>
+<p>The total volume of sediment transported during the flood can be
+estimated by summing the values</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>total_transport_volume <span class="ot">&lt;-</span> <span class="fu">sum</span>(test_output<span class="sc">$</span>Qbi)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(total_transport_volume))</span></code></pre></div>
+<pre><code>## [1] 441</code></pre>
+<p>The grain size distribution of the bed material and of the load can
+also be compared.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">plot</span>(test_output<span class="sc">$</span>dm, <span class="fu">rev</span>(<span class="fu">cumsum</span>(<span class="fu">rev</span>(test_output<span class="sc">$</span>Fi))),</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>     <span class="at">lty =</span> <span class="dv">2</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>     <span class="at">log =</span> <span class="st">&quot;x&quot;</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;darkgreen&quot;</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Grain size (mm)&quot;</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Cumulative proportion finer&quot;</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="fu">points</span>(test_output<span class="sc">$</span>dm, <span class="fu">rev</span>(<span class="fu">cumsum</span>(<span class="fu">rev</span>(test_output<span class="sc">$</span>Li))),</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="fu">lines</span>(test_output<span class="sc">$</span>dm, <span class="fu">rev</span>(<span class="fu">cumsum</span>(<span class="fu">rev</span>(test_output<span class="sc">$</span>Li))),</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>      <span class="at">lty =</span> <span class="dv">2</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>This analysis can also be performed if you only have an estimate of
+the bed D50 and D84 by simulating a log-normal grain size
+distribution.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#pick a D50 and log-normal standard deviation that gives the same D50 and D84 as the Wolman sample above</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>D50 <span class="ot">&lt;-</span> <span class="fu">approx</span>(<span class="at">x =</span> test_output<span class="sc">$</span>cpf,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>              <span class="at">y =</span> test_output<span class="sc">$</span>Di,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>              <span class="at">xout =</span> <span class="fl">0.5</span>)[[<span class="dv">2</span>]]</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>sp <span class="ot">&lt;-</span> <span class="fl">1.08</span> </span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>test_gsd <span class="ot">&lt;-</span> <span class="fu">sim_gsd</span>(D50, sp)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>test_output <span class="ot">&lt;-</span> <span class="fu">fractional_capacity</span>(<span class="at">hydrograph =</span> test_hydrograph,</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>                                    <span class="at">xs_data =</span> test_section,</span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>                                    <span class="at">S =</span> test_slope,</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>                                    <span class="at">gsd =</span> test_gsd,</span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>                                    <span class="at">Fsand =</span> test_fsand)</span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a>total_transport_volume <span class="ot">&lt;-</span> <span class="fu">sum</span>(test_output<span class="sc">$</span>Qbi)</span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(total_transport_volume))</span></code></pre></div>
+<pre><code>## [1] 431</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">plot</span>(test_output<span class="sc">$</span>dm, <span class="fu">rev</span>(<span class="fu">cumsum</span>(<span class="fu">rev</span>(test_output<span class="sc">$</span>Fi))),</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>     <span class="at">lty =</span> <span class="dv">2</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>     <span class="at">log =</span> <span class="st">&quot;x&quot;</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;darkgreen&quot;</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Grain size (mm)&quot;</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Cumulative proportion finer&quot;</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="fu">points</span>(test_output<span class="sc">$</span>dm, <span class="fu">rev</span>(<span class="fu">cumsum</span>(<span class="fu">rev</span>(test_output<span class="sc">$</span>Li))),</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="fu">lines</span>(test_output<span class="sc">$</span>dm, <span class="fu">rev</span>(<span class="fu">cumsum</span>(<span class="fu">rev</span>(test_output<span class="sc">$</span>Li))),</span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a>      <span class="at">lty =</span> <span class="dv">2</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>In this case the field-measured and the simulated grain size
+distributions are quite similar, but larger differences can be expected
+when the actual grain size distribution is not log-normally
+distributed.</p>
+</div>
+<div id="see-also-3" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>estimate_capacity()</code>, <code>bank_erode_fp</code>,
+<code>bank_erode_trc()</code></p>
+<hr />
+</div>
+</div>
+<div id="gbem" class="section level2">
+<h2>gbem</h2>
+<p>the GBEM function: gravel-bed river bank erosion model. This function
+estimates the change in channel width for a flood of magnitude
+<code>Q</code> and duration <code>t</code> based on the sediment
+texture, slope, riparian vegetation type, and the channel width at the
+beginning of the flood. It can also be implemented at a finer timescale
+to predict the bank erosion during a flood hydrograph.</p>
+<div id="usage-4" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>gbem(   Q,   t,   n,   D84,   D50,   W,   S,   H = 0,   fun = &quot;ec&quot;,   g = 9.81,   rho_s = 2650,   rho = 1000 )</code></p>
+</div>
+<div id="arguments-4" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>Q</code> discharge carried by the stream (m<span class="math inline">\(^3\)</span>/s)</p></li>
+<li><p><code>t</code> time for which Q acts on the stream channel
+(hrs)</p></li>
+<li><p><code>n</code> Manning’s n value for the main channel</p></li>
+<li><p><code>D84</code> 84th percentile of the surface grain size
+distribution (m)</p></li>
+<li><p><code>D50</code> 50th percentile of the grain size distribution
+(m)</p></li>
+<li><p><code>W</code> water surface width at the beginning of time
+interval t</p></li>
+<li><p><code>S</code> energy gradient of the stream channel
+(m/m)</p></li>
+<li><p><code>H</code> effective rooting depth for vegetation; grassy
+banks, no trees / shrubs H = 0.35; 1 to 5 percent tree / shrub cover H =
+0.50; 5 to 50 percent tree / shrub cover H = 0.90; more than 50 percent
+tree / shrub cover H = 1.1</p></li>
+<li><p><code>fun</code> choice of transport function. Default is Eaton
+and Church (“ec”)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-4" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function implements the gravel bed bank erosion model (GBEM)
+that is the core function used by STOCHASIM and the BGC stochastic bank
+erosion model. It limits the amount of bank erosion that can occur in a
+given timestep based on the bedload transport capacity of the stream
+proximate to the channel banks. The output from this function is a
+vector containing: (1) the predicted widening based only on a stability
+criterion; (2) the predicted widening based on the stability criterion,
+constrained by the bedload transport capacity; (4) the volume of bedload
+that could be transported during the time step t in the near-bank
+region; and (4) the critical depth for bank erosion</p>
+</div>
+<div id="output-4" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function outputs a vector containing a string of four numbers</p>
+<ul>
+<li>an estimate of the width increase based only on channel stability,
+constrained by the ability of the river to transport bed material away
+from the banks</li>
+<li>an estimate of the flow depth following bank erosion</li>
+<li>an estimate of the total beload transport volume per unit width of
+the stream (m3/m)</li>
+<li>an estimate of the critical depth for bank erosion to occur.</li>
+</ul>
+</div>
+<div id="examples-4" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>Here is an example of a single calculation using GBEM.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co">#specify flood details</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>flood_mag <span class="ot">&lt;-</span> <span class="dv">40</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>flood_dur <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#specify river reach details</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>river_n <span class="ot">&lt;-</span> <span class="fl">0.04</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>river_d50 <span class="ot">&lt;-</span> <span class="fl">0.04</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>river_d84 <span class="ot">&lt;-</span> <span class="fl">2.1</span> <span class="sc">*</span> river_d50</span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>river_w0 <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>river_slope <span class="ot">&lt;-</span> <span class="fl">0.007</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>river_H <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="co">#run the model</span></span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>out_put <span class="ot">&lt;-</span> <span class="fu">gbem</span>(flood_mag, flood_dur, river_n, river_d84, river_d50, river_w0, river_slope, river_H)</span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a></span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="co">#update the river width based on the modelled bank erosion</span></span>
+<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a>river_w1 <span class="ot">&lt;-</span> river_w0 <span class="sc">+</span> out_put[<span class="dv">2</span>]</span>
+<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a><span class="fu">print</span>(river_w1)</span></code></pre></div>
+<pre><code>##    depth 
+## 25.78269</code></pre>
+<p>We can use the model to investigate the potential effects of a flood,
+but also a disturbance such as a wildfire or riparian logging. The code
+below simulates the effects on the stable channel width modeled above,
+due to a loss of about half of the riparian bank strength. The modeled
+bank strength loss is equivalent to transitioning from a cottonwood
+forest to a grass field.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#change the bank strength</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>river_H <span class="ot">&lt;-</span> river_H <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#run the model using the stable width from the last model run</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>out_put <span class="ot">&lt;-</span> <span class="fu">gbem</span>(flood_mag, flood_dur, river_n, river_d84, river_d50, river_w1, river_slope, <span class="at">H =</span> river_H)</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co">#update the river width based on the modelled bank erosion</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>river_w2 <span class="ot">&lt;-</span> river_w1 <span class="sc">+</span> out_put[<span class="dv">1</span>]</span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="fu">print</span>(river_w2)</span></code></pre></div>
+<pre><code>##    depth 
+## 46.60563</code></pre>
+<p>Changes in bank strength have a very large potential effect on stable
+channel dimensions, making floods that occur 5 to 10 years after an
+intense wildfire in a riparian zone particularly hazardous.</p>
+</div>
+<div id="see-also-4" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>bank_erode_fp()</code>, <code>bank_erode_trc()</code></p>
+<hr />
+</div>
+</div>
+<div id="bank_erode_fp" class="section level2">
+<h2>bank_erode_fp</h2>
+<p>Estimate the cumulative bank erosion during a flood hydrograph for a
+floodplain channel</p>
+<div id="usage-5" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>bank_erode_fp(Q, t, n, D84, D50, W, S, H = 0, fun = &quot;ec&quot;)</code></p>
+</div>
+<div id="arguments-5" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>Q</code> a list of discharge values at regular time
+intervals defining the flood hydrograph (m<span class="math inline">\(^3\)</span>/s)</p></li>
+<li><p><code>t</code> time interval between discharge measurements
+(hrs)</p></li>
+<li><p><code>n</code> Manning’s n value for the main channel</p></li>
+<li><p><code>D84</code> 84th percentile of the surface grain size
+distribution (m)</p></li>
+<li><p><code>D50</code> 50th percentile of the grain size distribution
+(m)</p></li>
+<li><p><code>W</code> water surface width at the beginning of time
+interval t</p></li>
+<li><p><code>S</code> energy gradient of the stream channel
+(m/m)</p></li>
+<li><p><code>H</code> effective rooting depth for vegetation</p></li>
+<li><p><code>fun</code> choice of transport function. Default is Eaton
+and Church (“ec”)</p></li>
+<li><p><code>Z</code> height of the terrace above the channel bottom
+(m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-5" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function implements the GBEM model for estimating bank erosion
+using the standard model for streams where the floodplain is assumed to
+be equal to the critical depth based on the bed texture and slope. The
+function outputs a data frame containing variables for time since the
+start of the hydrograph (time), discharge values for each time (Q), the
+predicted bank erosion distance for the time step (erosion), the volume
+of sediment transport that the stream can convey during the timestep
+(vb), the critical depth for bank erosion (dc), channel width at the end
+of each timestep (wi)</p>
+</div>
+<div id="output-5" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function outputs a data frame with values for each time step in
+the simulation. The variables in the data frame are:</p>
+<ul>
+<li>time (in hours)</li>
+<li>discharge (in m<span class="math inline">\(^3\)</span>/s)</li>
+<li>predicted bank erosion for the time step (in m)</li>
+<li>volume of bedload transported across the entire channel during the
+time step (in m<span class="math inline">\(^3\)</span>)</li>
+<li>the critical depth for the occurrence of bank erosion (a constant
+value, in m)</li>
+<li>the simulated channel width at the end of each time step (m)</li>
+</ul>
+</div>
+<div id="examples-5" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>Here is an example of the function</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co">#specify the flood hydrograph</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>flood_peak <span class="ot">&lt;-</span> <span class="dv">60</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>time2peak <span class="ot">&lt;-</span> <span class="dv">6</span></span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fl">0.25</span></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>test_hydrograph <span class="ot">&lt;-</span> <span class="fu">scs_hydrograph</span>(flood_peak, time2peak, dt)[[<span class="dv">2</span>]]</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="co">#specify river reach details</span></span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>river_n <span class="ot">&lt;-</span> <span class="fl">0.04</span></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>river_d50 <span class="ot">&lt;-</span> <span class="fl">0.04</span></span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>river_d84 <span class="ot">&lt;-</span> <span class="fl">2.1</span> <span class="sc">*</span> river_d50</span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>river_w0 <span class="ot">&lt;-</span> <span class="dv">25</span></span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>river_slope <span class="ot">&lt;-</span> <span class="fl">0.007</span></span>
+<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a>river_H <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a>out_put <span class="ot">&lt;-</span> <span class="fu">bank_erode_fp</span>(test_hydrograph, dt, river_n, river_d84, river_d50, river_w0, river_slope, river_H)</span>
+<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a><span class="fu">head</span>(out_put)</span></code></pre></div>
+<pre><code>##   time    Q      depth erosion           Vb        dc wi
+## 1    1 0.00 0.00000000       0 0.000000e+00 0.7826946 25
+## 2    2 0.75 0.07833924       0 0.000000e+00 0.7826946 25
+## 3    3 1.50 0.11874008       0 0.000000e+00 0.7826946 25
+## 4    4 2.85 0.17452172       0 4.481413e-07 0.7826946 25
+## 5    5 4.60 0.23259334       0 1.533149e-03 0.7826946 25
+## 6    6 6.45 0.28489079       0 2.401352e-02 0.7826946 25</code></pre>
+<p>The total change in width and the total volume of bedload transport
+can be calculated from the data. Note that this estimate reflects the
+decline in transport rate due to channel widening, resulting in a
+hysteresis loop in the data.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>total_width_increase <span class="ot">&lt;-</span> <span class="fu">sum</span>(out_put<span class="sc">$</span>erosion)</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="fu">print</span>(total_width_increase)</span></code></pre></div>
+<pre><code>## [1] 15.9951</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>total_transport_volume <span class="ot">&lt;-</span> <span class="fu">sum</span>(out_put<span class="sc">$</span>Vb)</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">print</span>(total_transport_volume)</span></code></pre></div>
+<pre><code>## [1] 473.0646</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">plot</span>(out_put<span class="sc">$</span>Q, out_put<span class="sc">$</span>Vb,</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">21</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(Discharge<span class="sc">~</span>(m<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span>s)),</span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="fu">expression</span>(Transport<span class="sc">~</span>volume<span class="sc">~</span>(m<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span>s)))</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>The volume that would be transported if bank erosion did not occur
+can be estimated by putting in a very high bank strength value. However,
+this analysis assumes that the channel is rectangular, and does not
+capture the effects of changing channel width with flood stage. If bank
+erosion can be ignored, it is more appropriate to use apply the
+<code>estimate_capacity()</code> function above to a real cross section
+instead of using functions relying on <code>gbem()</code>.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co">#repeat analysis with higher bank strength</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>river_H <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>out_put <span class="ot">&lt;-</span> <span class="fu">bank_erode_fp</span>(test_hydrograph, dt, river_n, river_d84, river_d50, river_w0, river_slope, river_H)</span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>total_transport_volume <span class="ot">&lt;-</span> <span class="fu">sum</span>(out_put<span class="sc">$</span>Vb)</span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="fu">print</span>(total_transport_volume)</span></code></pre></div>
+<pre><code>## [1] 689.7506</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">plot</span>(out_put<span class="sc">$</span>Q, out_put<span class="sc">$</span>Vb,</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>,</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">21</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(Discharge<span class="sc">~</span>(m<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span>s)),</span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="fu">expression</span>(Transport<span class="sc">~</span>volume<span class="sc">~</span>(m<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span>s)))</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="see-also-5" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>bank_erode_trc()</code> <code>gbem()</code></p>
+<hr />
+</div>
+</div>
+<div id="bank_erode_trc" class="section level2">
+<h2>bank_erode_trc</h2>
+<p>Estimate the cumulative bank erosion during a flood hydrograph in an
+incized channel</p>
+<div id="usage-6" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>bank_erode_trc(   Q,   t,   n,   D84,   D50,   W,   S,   H = 0,   Z,   fun = &quot;ec&quot;,   g = 9.81,   rho_s = 2650,   rho = 1000 )</code></p>
+</div>
+<div id="arguments-6" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>Q</code> a list of discharge values at regular time
+intervals defining the flood hydrograph (m<span class="math inline">\(^3\)</span>/s)</p></li>
+<li><p><code>t</code> time interval between discharge measurements
+(hrs)</p></li>
+<li><p><code>n</code> Manning’s n value for the main channel</p></li>
+<li><p><code>D84</code> 84th percentile of the surface grain size
+distribution (m)</p></li>
+<li><p><code>D50</code> 50th percentile of the grain size distribution
+(m)</p></li>
+<li><p><code>W</code> water surface width at the beginning of time
+interval t</p></li>
+<li><p><code>S</code> energy gradient of the stream channel
+(m/m)</p></li>
+<li><p><code>H</code> effective rooting depth for vegetation grassy
+banks, no trees / shrubs H = 0.35; 1 to 5percent tree / shrub cover H =
+0.50; 5 to 50percent tree / shrub cover H = 0.90; more than 50percent
+tree / shrub cover H = 1.1</p></li>
+<li><p><code>Z</code> height of the terrace above the channel bottom
+(m)</p></li>
+<li><p><code>fun</code> choice of transport function. Default is Eaton
+and Church (“ec”)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-6" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function implements the GBEM model for estimating bank erosion
+using a simple adjustment parameter to adapt the standard model for
+streams where the channel is incised, and confined by a terrace. The
+function outputs a data frame containing variables for time since the
+start of the hydrograph (time), discharge values for each time (Q), the
+predicted bank erosion distance for the time step (erosion), the volume
+of sediment transport that the stream can convey during the timestep
+(vb), the critical depth for bank erosion (dc), channel width at the end
+of each timestep (wi)</p>
+</div>
+<div id="output-6" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function outputs a data frame with values for each time step in
+the simulation. The variables in the data frame are:</p>
+<ul>
+<li>time (in hours)</li>
+<li>discharge (in m<span class="math inline">\(^3\)</span>/s)</li>
+<li>predicted bank erosion for the time step (in m)</li>
+<li>volume of bedload transported across the entire channel during the
+time step (in m<span class="math inline">\(^3\)</span>)</li>
+<li>the critical depth for the occurrence of bank erosion (a constant
+value, in m)</li>
+<li>the simulated channel width at the end of each time step (m)</li>
+</ul>
+</div>
+<div id="examples-6" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>Here is an example of the function.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co">#use the flood hydrograph created above for bank_erode_fp</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="co">#use the same river reach details as for bank_erode_fp</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>river_H <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a>river_Z <span class="ot">&lt;-</span> <span class="fl">2.5</span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a>out_put <span class="ot">&lt;-</span> <span class="fu">bank_erode_trc</span>(test_hydrograph, dt, river_n, river_d84, river_d50, river_w0, river_slope, river_H, river_Z)</span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="fu">head</span>(out_put)</span></code></pre></div>
+<pre><code>##   time    Q      depth erosion           Vb        dc wi
+## 1    1 0.00 0.00000000       0 0.000000e+00 0.7826946 25
+## 2    2 0.75 0.07833924       0 0.000000e+00 0.7826946 25
+## 3    3 1.50 0.11874008       0 0.000000e+00 0.7826946 25
+## 4    4 2.85 0.17452172       0 4.481413e-07 0.7826946 25
+## 5    5 4.60 0.23259334       0 1.533149e-03 0.7826946 25
+## 6    6 6.45 0.28489079       0 2.401352e-02 0.7826946 25</code></pre>
+<p>The total change in width and the total volume of bedload transport
+can be calculated from the data. Note that this estimate reflects the
+decline in transport rate due to channel widening, resulting in a
+hysteresis loop in the data.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>total_width_increase <span class="ot">&lt;-</span> <span class="fu">sum</span>(out_put<span class="sc">$</span>erosion)</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="fu">print</span>(total_width_increase)</span></code></pre></div>
+<pre><code>## [1] 9.378277</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>total_transport_volume <span class="ot">&lt;-</span> <span class="fu">sum</span>(out_put<span class="sc">$</span>Vb)</span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a><span class="fu">print</span>(total_transport_volume)</span></code></pre></div>
+<pre><code>## [1] 561.7546</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="fu">plot</span>(out_put<span class="sc">$</span>Q, out_put<span class="sc">$</span>Vb,</span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;darkorange&quot;</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">21</span>,</span>
+<span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&quot;b&quot;</span>,</span>
+<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(Discharge<span class="sc">~</span>(m<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span>s)),</span>
+<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="fu">expression</span>(Transport<span class="sc">~</span>volume<span class="sc">~</span>(m<span class="sc">^</span><span class="dv">3</span><span class="sc">/</span>s)))</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>Compared to the same analysis using <code>bank_erode_fp()</code> the
+amount of widening is lower and the total transport volume is higher,
+reflecting the fact that this stream is confined by a terrace.</p>
+</div>
+<div id="see-also-6" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>bank_erode_fp()</code>, <code>gbem()</code></p>
+<hr />
+</div>
+</div>
+<div id="step_length" class="section level2">
+<h2>step_length</h2>
+<p>Calculating the step length for sediment transport of coarse bed
+material</p>
+<div id="usage-7" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>step_length(   D50,   q,   d,   S,   dt,   flashy = FALSE,   use_ferguson = TRUE,   g = 9.81,   rho = 1000 )</code></p>
+</div>
+<div id="arguments-7" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>D50</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>q</code> a list of specific discharge values for a
+hydrograph (m3/s/m)</p></li>
+<li><p><code>d</code> flow depth at the bankfull stage (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>dt</code> time interval between discharge measurements
+(hrs)</p></li>
+<li><p><code>flashy</code> a logical variable (true if the hydrograph is
+short and flashy)</p></li>
+<li><p><code>use_ferguson</code> logical variable for selecting the
+ferguson equation for calculating the critical stream power}</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-7" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this function calculates the average distance for bedload transport
+during a flow of a given duration. This is a good tool for estimating
+potential relations between sediment sources and sediment deposition
+areas. It addresses only the coarse sediment that moves along the
+channel bed, not the silt, sand and finer granules that can move in
+saltation of suspension modes.</p>
+</div>
+<div id="output-7" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-7" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>Here is an example of the function in use for Fishtrap Creek, where
+tracers were deployed in 2006.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co">#simulate the hydrograph</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>Q <span class="ot">&lt;-</span> <span class="fu">scs_hydrograph</span>(<span class="at">Qpeak =</span> <span class="dv">7</span>, </span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>                    <span class="at">tpeak =</span> <span class="dv">8</span>, </span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a>                    <span class="at">dt =</span> <span class="dv">1</span>)[[<span class="dv">2</span>]]</span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a>q <span class="ot">&lt;-</span> Q <span class="sc">/</span> <span class="dv">6</span>  <span class="co">#channel is approximately 6 m wide</span></span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fl">0.6</span>  <span class="co">#estimated bankfull depth</span></span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a>D50 <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a>Slope <span class="ot">&lt;-</span> <span class="fl">0.02</span></span>
+<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a><span class="co">#use same values for stream evaluated in bank_erode_pf() and bank_erode_trc()</span></span>
+<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a><span class="fu">step_length</span>(D50, q, d, Slope, <span class="dv">1</span>, <span class="at">flashy =</span> <span class="cn">FALSE</span>, <span class="at">use_ferguson =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] 42.43703</code></pre>
+<p>Typically, step length during a bankfull flow is on the order of 5 to
+10 times the channel width, depending on the flood duration, which in
+this case lines up with the estimate assuming that the flood was not
+particularly flashing and using the Ferguson (2005) to estimate the
+critical stream power for entrainment.</p>
+<p>The estimation of step length is very sensitive to the quality of the
+input data, particularly the estimate of the specific discharge value.
+If little is known about the hydrograph shape, it is appropriate to
+assume the flood is flashy, in which case a function using only the peak
+specific discharge is used.</p>
+</div>
+<div id="see-also-7" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>crit_power()</code>, <code>unit_power()</code></p>
+<hr />
+</div>
+</div>
+<div id="quick_ffa_ann" class="section level2">
+<h2>quick_ffa_ann</h2>
+<p>This function uses the <code>RivRetrieve</code> package to source and
+download all available daily discharge measurements for any Water Survey
+of Canada of USGS gauging station, identify the maximum flows, and
+perform a flood frequency analysis using maximum likelihood estimation
+to fit a Generalized Extreme Value distribution to the data.</p>
+<div id="usage-8" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>quick_ffa_ann(station, rp, qual)</code></p>
+</div>
+<div id="arguments-8" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<p><code>station</code> a string containing the station name
+(e.g. ‘08GA022’ or ‘14048000’)</p>
+<p><code>rp</code> a vector containing the return periods for which to
+estimate flood quantiles. Default values are 2, 5, 10, 20, 50, 100, and
+200 yrss</p>
+<p><code>qual</code> a value from 0 to 1 specifying how complete an
+annual dataset should be in order to estimate an annual maximum
+discharge value for that year. Default value is 0.6.</p>
+</div>
+<div id="details-8" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>When applying this function for the first time to data from the Water
+Survey of Canada, you will need to first run
+<code>tidyhydat::download_hydat()</code> to download the hydat database
+on your computer. Data from the USGS is provided from an online
+repository and no additional installation in necessary.</p>
+</div>
+<div id="output-8" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function produces a graph showing the data and the fitted GEV
+model, and outputs a data frame containing flood quantiles for the
+specified return periods.</p>
+</div>
+<div id="examples-8" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<p>The following example shows the function applied to a USGS station
+and a WSC station.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co"># if running for the first time, also run...</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="co"># tidyhydat::download_hydat()</span></span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>wsc_test <span class="ot">&lt;-</span> <span class="fu">quick_ffa_ann</span>(<span class="st">&#39;08GA022&#39;</span>)</span></code></pre></div>
+<pre><code>## Rows: 26355 Columns: 5
+## ── Column specification ──────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (3): ID, Parameter/Paramètre, Symbol/Symbole
+## dbl  (1): Value/Valeur
+## date (1): Date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">print</span>(wsc_test)</span></code></pre></div>
+<pre><code>##   return_period estimate
+## 1             2     1100
+## 2             5     1480
+## 3            10     1750
+## 4            20     2050
+## 5            50     2470
+## 6           100     2820
+## 7           200     3200</code></pre>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>usgs_test <span class="ot">&lt;-</span><span class="fu">quick_ffa_ann</span>(<span class="st">&#39;12150800&#39;</span>)</span></code></pre></div>
+<pre><code>## Requesting:
+## https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items?f=json&amp;lang=en-US&amp;skipGeometry=TRUE&amp;monitoring_location_id=USGS-12150800&amp;parameter_code=00060&amp;statistic_id=00003&amp;time=1900-01-01%2F2026-05-06&amp;limit=50000</code></pre>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="fu">print</span>(usgs_test)</span></code></pre></div>
+<pre><code>##   return_period estimate
+## 1             2     1680
+## 2             5     2190
+## 3            10     2520
+## 4            20     2840
+## 5            50     3240
+## 6           100     3550
+## 7           200     3840</code></pre>
+</div>
+<div id="see-also-8" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>quick_ffa_dual()</code></p>
+<hr />
+</div>
+</div>
+<div id="quick_ffa_dual" class="section level2">
+<h2>quick_ffa_dual</h2>
+<p>Estimate flood quantiles for dual mechanism daily maximum flows</p>
+<div id="usage-9" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>quick_ffa_dual(   station,   start = &quot;04-01&quot;,   end = &quot;07-01&quot;,   rp = c(2, 5, 10, 20, 50, 100, 200),   qual = 0.6 )</code></p>
+</div>
+<div id="arguments-9" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>station</code> a string containing the station name
+(e.g. ‘08GA022’ or ‘14048000’)</p></li>
+<li><p><code>start</code> a string specifying the beginning of the melt
+window in MM-DD format</p></li>
+<li><p><code>rp</code> a vector containing the return periods for which
+to estimate flood quantiles</p></li>
+<li><p><code>qual</code> a value from 0 to 1 specifying how complete an
+annual dataset should be in order to estimate an annual maximum
+discharge value for that year</p></li>
+</ul>
+</div>
+<div id="details-9" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function loads data from WSC or USGS stations and fits a
+generalized extreme value (GEV) distribution to the data using maximum
+likelihood estimation.</p>
+</div>
+<div id="output-9" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+<p>The function produces a graph showing the data and the fitted GEV
+model, and outputs a data frame containing flood quantiles for the
+specified return periods.</p>
+</div>
+<div id="examples-9" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="co"># if running for the first time, also run...</span></span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a><span class="co"># tidyhydat::download_hydat()</span></span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a>wsc_test <span class="ot">&lt;-</span> <span class="fu">quick_ffa_dual</span>(<span class="st">&#39;08MF065&#39;</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a>                           <span class="at">start =</span> <span class="st">&#39;04-01&#39;</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a>                           <span class="at">end =</span> <span class="st">&#39;07-01&#39;</span>)</span></code></pre></div>
+<pre><code>## Rows: 17986 Columns: 5
+## ── Column specification ──────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (3): ID, Parameter/Paramètre, Symbol/Symbole
+## dbl  (1): Value/Valeur
+## date (1): Date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA+VBMVEUAAAAAADoAAGYAAP8AOjoAOmYAOpAAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmAGZmOgBmOjpmOmZmOpBmZgBmZjpmZmZmZpBmkJBmkLZmkNtmtrZmtttmtv+QOgCQZgCQZjqQZmaQkGaQkLaQtpCQttuQtv+Q27aQ29uQ2/+2ZgC2Zjq2ZpC2kDq2kGa2kJC225C227a229u22/+2/7a2/9u2///bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb/9vb////AAD/jAD/tmb/25D/27b/29v//7b//9v///9k6hDuAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAQXUlEQVR4nO2dDXvbthHH6TjO5DZpk8heupe+JfKyrN1meuu2ZDPbbmk7u5In4ft/mAGHdxLgAaQokfL9nyeORB1A8EfgAIJHsGCkVhX7LsDYRYAQESBEBAgRAUJEgBARIEQECBEBQkSAEBEgRAQIEQFCRIAQESBEBAgRAUJEgBARIEQECBEBQkSAEBEgRAQIEQFCRIAQESBEBAgRAUJEgBARIEQECFHByuLBtfy8uTotimd7LQ7bXBSPbnJ+yij05i/XzQ0tOwS5gJYF1zxpX4MpG1B6oe9ePLhubsgBVBVHlyl7GlJYeRtKL7Q90NiGkIqvjVkpzsXRJd/jVy+KB+/Y5op/fQalFfX46BVYSvP1GZw1a8JT/Zl/OZGF/e5xUTx8JY52Jr7ys7xQ+/v+Bd/JR5f1FGazAPRfL9m3PK+jp+8MO/PdLTTP4RO+yy9UUeQBgIw5WPKym13JDf9SZ8RL7xyKSuUBEnp0wxkInVxD0aRqgByTSlnA6Szl5znfCnnXWrG0clPYzUDBTVaZPUtA9rsHSG0Wx1qZT4w55gqQ3ZUHqJFeHQorropaE+O/P3rHfhDFe8dWpwIEz3R2s7lqAHJMeKqTd+KvNH9+c3fGDflvCzCeyT3wY/zFTTOFsxkoOMnEnxv2XaF/cr67heYpJLy5PQAh17xUlE0JSou9lt4cCge0PmsCWjDTiCoLhWflA3JNZCq+n5muMNXTt6qNOS2M6/03vNLPmJfCbobyOsn47ydvDV1gp7+7hS79Omd255qbeqxL4ABqptcFazpp5fW4ga5p2nHWfZBjolLBSXf9rOJrvm9eyxQz5qZwNut2pJPJ1g3OQbPT351C611WtigGqjFXp9mWwAIKpNfVPgpItVVx9NrWAQR11DGpAZo5Z3ChKpou78kf3p/VADmbTY3Xye5eyF38Uf1kvzuF1iWESuf1a4655mFKYAEF0qOApB+wdTsAyDGJ1SAByymwbPvrOiBns0zsJbt78xjcp85Xf0+pQa45lNwtQVoNCvggyN96VmabFbRQ1e3MPRM3V2m+/Ohruf2x5bXUzXvupXA2b3Sn4iZjm9/xLB3w8N3dse9D6iMjaQ4/uiWI+iAPUNnsxWT+JR/5MN4X8eSyF5OW4N3vLlS/YEzcXLn5M3AWC+XKzEAXOguRuFGD9GZFwSSDHlE0FHWane9uof1eyAJyzWF7owShXswDVMQAqUGOO7BRdVSPclwTL9fS+EFo83a8agZUTR/kOWkn2ZVxc/In+90ttD+OcWqQY75Uwx5TAr2hMQ7yAL2K+CDeeF9zFnLIKkbSJ2rMveJu7+k/lAc1Jn6uMJL+Up9D0w5lH3LydVWvyXazbkc2mcir+MiOpM13D5AcCX/pbqklZ2Igd/LOKQFseOuOpJ301kmnK+napS5/EDR0su1raEC8+Xeg2jXZABoWEDip/AmUjskG0eCAjp7nJemRbBDRlCsiAoSIACEiQIgIECIChIgAISJAiAgQIgKEiAAhIkCICBAiAoSIACEiQIgIECIChIgAISJAiCSg979/wvXZW8T4PkoAgpuPoIev9l2e0algm6ujz9/+KD7/7/03j59lhZjeAxXsyqs13+05kHx0Kr6txdKsvtxPQcaq4sf6ln9TI3NF3TwiCWh9Nofw4t6Vp5iM8gCVIgB5xsoZYp2Y3QSUB2h9tmDLgv/rHZNTTKYOZQMqRVTcNgD1zGE3ym5is/WZCKfeQhM7TEAiYulyc9Gbz8EC2t6OCRCWHQFCsiNASHYECMnu4ADlDJoSsjs8QNJ8W4d1oIBYX0bOCP5QATF5lL13fMiA8hLGsjtwQL13fM8B6UcDo1f9OwQEczRdnynLAHSa8QhPpZ9RWsYeVgoBur29Td1BjjggwaibMgAt2OrjxJnWzYXBUkVmZwOAbm+HIbQrQNds/cvEKuSUJzb32AR0e9tOCB4SXvC8X57JpzDFo7bi8XB46nYhpoP/cyp+mwtLYVAV6oniz087T6Nn+aD1r7ddgzSSW1csWJlWpwsAsT4Tj/Tzf0ugNYM9VPAYNCcDj/urKc8KHu6e76wGsWX6qkqVftA2wwchNUhXRXFfRdCSJ4GXSRSr/PTRzeqDS4GDqT8LMBTJdgYoR+pB+XjFzvZB6zNJCI6V/4EaJUEs1udffXi9FIvsLFRV43+WauGMxU4B6QMfZNK+3UfDyGFRAwR3Eearj386vyxnzAekrml2Cmhz0f+Woc6uyzioFCvM1GoQd0J/nbHy+cWCBWoQ210vpvaVZj3QQFEfK/9jfBBbffibOasefnDpAzJl7Qfo52RL8cfpnlrVbaDYKqgQS1uDTC/GoF9bypVHHEDQi6k6Jx12F+X6IN5VJNh2GygiEj4FlkhSgNQ4iKuEpVTmrAYIxkH8J/BTOxkHMbseV7uTjg8UD30+KPGW4SA1aD8ayEl3GSiOU9k1KNHZdRkojlLDOOmk7A4SkK4Yw4ykx6hhrsXUdeJIZhR7aUBA0H9FvXpPQJF8oxMOYfvmRGwjgwxAf6v52/UXUVsBSBUpp5s/Pj5OLU1EGTMyLEitD6D1Z96h3v0q7oYEIHkxmTGjKPj0JbRXQOzuk2cmmPzutV1/L7TnDjXo+LiV0Pr8jV7sWV1r2MlXEL+wOHqjl0GE6w5n/tW3l5ms5ERspa9YTAZeOXN8kFhZ8OGTTz958rgonrZd2sjObsa0uw5mVzBbaY5dsWBlErGRDOKPK3VFZiZfQSUsL+pMxXrzr569m4mZmLUZdAek1ot0F0JvYwSFjQ0s82uQQL0+v5QXovKA9fUp0/+XIoBSTYPU5l+tfTMTpmcjRQa1cmb3YpsffkhN0p5dpg8yDmNpm8zCbpa+DrioibTG5JBrbzIxE7Mmg1o5x3TrudVHyyPjfuLB308DgCofkJ5yDAJyMzETs9UEALUKDs8ctHvA4GUzapCXiSEykhrUfT5IzpHB+tOhJia5VJ4PigBqZuJlUC9w8qHlHQ+eXdcapF4jUAOk7iV6vVhLDVKZzJmZmLUZ+OWcFiAYq1yqexs+oMA4qMUHQSZyIrbSl4z9x0GynDzTsv/6sod6scrbdiUeZulN6EABCQ8IwQI0H9S0FH+gBYvF/QlQ01L80TWo7H0H+kABKR9U9V9G/lAByQv1Lbx+7WABbW3H3TIMzYil3axrWOlXgCycT7DZ66HvMyDjR12Puj7/rdcBdb3t0/tlFmMFVMF1vlW2k1bv0ekRUKKzywakLgXsFYYz/Sq0Csa4yg8zFevqHHsQ0OZi5scfdAxeED1Zv55eAvq5VX4KPSVqAHkzp4yxcIyrMpn7E7QsAmhZM+oavMAHit3Git2nO8yUqAbkzZxKi3CMq6zq3gStUBCQ+Og1jo7BC6IG9RtM50eY6Qmt4MypUDjGVTOpXfubXmzhfpJsSufQOvugvosLZAOqGoDcmVOhcIyrDrdoAgrUoKrRA3UbKIr7Uz2vxvrXIHfmFBxyOMY1XoOagNRZl3eYVDkHGgdtP8rVTIlqZ+LNnBqLQIyr9kE4IE3VcdMDBVANEOVqpkRFrDbnv/CmX4XCMa7wgVeNFED6A3h6Vc5BQvCGiVHUU6Kilb90Zk7DgLypVBgHLVR8tXKeTUC2j7MOJNtJJ7meeJSrk91BXqwmRpjd3yjXVN3bKNdk3dso10EfhxqjOiwTWM28S5quOz5MQGLUtRS3fbBL+TE9N99LHcZBqw+v4V+bhhgo7kcdRtJimgEBdI+7eXFNXc6xJnZ/H4eCKErnxfMR3eMalKj7O1BEeyellIHiRJQHqO88WS27domJe2/RitvjY/X/dgqRovxx0K7226DDuQCj/o905GiQ+SA5ByMfRYhOd7SqWXlUDdotHZYLKHWqXt6LErZdALXR2TGeXECJV2Gym4d1LPIBhencIk8qDKYMQM6N+cTn5sv47bPIfiOVZ398cmtQmsxAsZxlAYrRud0PG9BAA0WzGlKsrjWzG5Xnscq+1BAhnNGHnIz0UHpzkQgoRMd9gmxvyp8wY4xtZdF/R6HKczwKPF3HQdsIAzaCQJcInL3zyR4HqeiOrQHScUARPj33sgXlzgcV8mms7usVedeATpTUSPlkO2lYQGgrYcAeHiaXeDuuqfdu+mt/Ua6sFmNXhzMOPnsD1IhBHCmfXEDbe79Y7ftI8XQZBw3zfrExsgHlj4O29X4xXyPF0wXQtt4vVtM48eQ3se29X6yuEcIRyo/u2Nb7xSaiPY6DpiEChGh/cdITUdac9Dx1mcCU8JeJaNg56bbghYloEEBJ4S8TUZc4afRK7N7WoFLdTkYn7VPCXyaiHECNR4ziSgh/mYgyADkDaHpbeMjQiX3ZwsXqZJQDCH2GZ2CFC1u0fW0mafm9V7UmQIgIECIChCgnPmgojRzQ/kWAEBEgRAQIEQGasggQIgKEiAAhIkCICBAiAoSIACEiQIgIECIChIgAISJAiPYNCAJqGrdp7Yu6oubL1icDAnbtCaLaM6DNBaxkW0cRe62pNRe3g+MvrgvYtSeIa8+A1DqT9bnw2N0DYy7jKKJ3gpt2SIK49t3EQI0zW7UeiHlZFHIn2LVLShDSKAA1VsYon4Q8k2Mu2yBym8q1S0oQ0hgANYJp1IsPI4SEuaxz7T7Fs0tJENQIAC1D3RWLnu6l9r3I8fp2EwYUDcYKhytJc7zF1Oym28TicW3Bvl6Zoz63bjdZJx18XY48mtDptg/ut/faDbupdvOR54jhQAJO2pq3j/sCdhMdKKrV5hsFV+/WaDGv2q4cQnatCeLadxMbvQgQIgKEiAAhIkCICBAiAoSIACEiQIgIECIChIgAISJAiAgQIgKEiAAhIkCICBAiAoSIACEiQIgIECIChIgAISJAiAgQIgKEaAeA9NJ5XizCsm2polImaIRiBN5BZOIRNhfBHMWbCXtpJ4DgSJduNEL765b0SxoSlm82gGJxn8uea0DvDpC3EmoKoKRoFW0TzTBSs5K1O0DysCtoa2IJ/Uc/qTehr8/fFA/+efbyzES8KEDm9elz0VTACAKrdHPVL2IXEtFWEFVUzcD0Glbph6iyflVoxzVIvIBLRDeJE65fFQ9NaX0mYuPV0To1yCYAo4VsqrBusQgeXuqYHwFHQOIVBkwBLrTqLlFTjnYHqIIDE6eeH4gPaK5ekqfDNu2LYpwEc9mOZCydiREv5eGbn1cfXMJnG7/X8wXNO+zFzNnkRfYBLRizf5jpxea1BJLAqXwFyEIiWGpAQGsmGpQy1YR6vp9wVzVILJkv3QewQgAZt+ElcADxT5ULyIR9lnOVC5wWaToJQDJu2fiDZEBuArQGrc//dH7pdGjQ/qYCCEpryi4Bzf3WEwDkJQj5oMrxQfy3J9qV20RT8EEACDoXOB6OShyQeFkibwitgJwE+nfTi4mfvF5MhY9LKx36O51eTJa+UiullYXwpkXxsr2JmQTO79FxkArOt1bw2/jHQTuRpLL6uAEj+R2yER0KIHktVjX98QSuxXYjPoRenTZhTOFqftoiQIgIECIChIgAISJAiAgQIgKEiAAhIkCICBAiAoSIACEiQIgIECIChIgAISJAiAgQIgKEiAAh+j/opzukc/+i5AAAAABJRU5ErkJggg==" /><!-- --></p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="fu">print</span>(wsc_test)</span></code></pre></div>
+<pre><code>##   return_period estimate
+## 1             2      208
+## 2             5      256
+## 3            10      290
+## 4            20      327
+## 5            50      380
+## 6           100      423
+## 7           200      461</code></pre>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a>usgs_test <span class="ot">&lt;-</span><span class="fu">quick_ffa_dual</span>(<span class="st">&#39;12451000&#39;</span>,</span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a>                           <span class="at">start =</span> <span class="st">&#39;04-01&#39;</span>,</span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a>                           <span class="at">end =</span> <span class="st">&#39;07-01&#39;</span>)</span></code></pre></div>
+<pre><code>## Requesting:
+## https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items?f=json&amp;lang=en-US&amp;skipGeometry=TRUE&amp;monitoring_location_id=USGS-12451000&amp;parameter_code=00060&amp;statistic_id=00003&amp;time=1900-01-01%2F2026-05-06&amp;limit=50000
+## ⠙ iterating 1 done (0.18/s) | 5.7s                                   </code></pre>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAA+VBMVEUAAAAAADoAAGYAAP8AOjoAOmYAOpAAZpAAZrY6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmADpmAGZmOgBmOjpmOmZmOpBmZgBmZjpmZmZmZpBmkJBmkLZmkNtmtrZmtttmtv+QOgCQZgCQZjqQZmaQkGaQkLaQtpCQttuQtv+Q27aQ29uQ2/+2ZgC2Zjq2ZpC2kDq2kGa2kJC225C227a229u22/+2/7a2/9u2///bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb/9vb////AAD/jAD/tmb/25D/27b/29v//7b//9v///9k6hDuAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAQW0lEQVR4nO2dCXvbxhGGIctyqfiIbUq1e+Syqbpu0lZwm7Z2KyRpnaSSSZXc//9jujt7zQILDBYHQdLzPY9lApg98GIvLAaLTLAalU2dgV0XAyLEgAgxIEIMiBADIsSACDEgQgyIEAMixIAIMSBCDIgQAyLEgAgxIEIMiBADIsSACDEgQgyIEAMixIAIMSBCDIgQAyLEgAgxIEIMiBADIsSACDEgQll250r/2rw5zbInk2ZGbC6ye9cphxIyvfnLVXVHQ4JGHtAyk5q3Sms0JQNqn+nbZ3euqjtSABXZ0WWblMYUnd+S2mc6z0qAKjvicoBydS2OLmWKXz/L7rwTmzdy8wnkVpXjo5cQoY51fQZXzZvIUH+WGyc6s98/yLK7L9XZztSmvMoLk9oPz2Qijy7LIdxuBei/QbDvZFxHj985dm4bZ1rG8Fwm+aXJij4BkDMHS5l3l5Te8S9zRYLw6FRigJTuXUsGSidXkDWtEiBkUhgLuJy5/j2XeyHuPKzF2gqH8LuBAg5WuJQ1IL8dADK71bkW7pcQyNwA8kkFgCrhM1cyy1VMHr/3TvyosvdOrE4VCBnp7FqVlhIgZCJDnbxTf7X50+vbM2kojy3AeKZTkOf4i+tqCLQbKKBg6s+1+D6zh9A2zrQMoeHN/QkoYfPcUHY5yD32Unh3KjWAFsJVosJDkVGFgLCJDiXTmdkCUzx+a+oYqmFS77+VhX4mghB+N+QXBZPHT946usDObuNM52GZc8lhc1eObQ4QoGp4l7EIIChb0sCWNNtwltsgZGJCwUXH7azh67Y3r3SImcAh0G5bj2wwXbuhcbDs7DbKtE2y8FlxUJ25ucw+Bx5QJLwv9jWATF1VZ29tESAoo8ikBGiGruDCFDSb35M/vD8rAUK7XYm3wW6f6ST+aA75bZRpm0ModEG/hswtD5cDDygSngSk2wFftiOAkEldCVKwUIZ13V+XAaHdOnAQ7Pb1A2g+bbx2u00JwuaQc5yDfiXIGwhfraCGmm5nHpjgWLX58tE3ev8Dz2tpq/c8CIF2b2yngoOJze9klAg8bOOEwzakPDLS5nAQ56C2DWoFSBofvRSyL5LBdS+WZ6YJm4vbC9MvOBMcqzR/Ao3FwjRlbqALnYUKXClBdreh4IJBj6gqirnMaBtnOuyFPCBsDvsrOYj1Yu0AmUEOHtiYMmpHOdgkiDV37SDUeT9edQOqahsUNNIo2BvXzOlDfhtnOhzHoBKEzJdm2ONyYHdUxkHtAInbV5KFHrKqkfTJN6b5kc3e43+YFtSZhLHCSPorew1dPdR9yMk3Rbkk+922HvlgKq7skR9Ju+0AkB4Jf4X3lIILNZA7eYdyADve4pE0Co8AibZqee8SKhwEjR1sDI0LSFb/DlS7BhtFYwKCRip9AqVjsJE0MqCjp2lBegQbSTzlSogBEWJAhBgQIQZEiAERYkCEGBAhBkSIARFiQIQYECEGRIgBEWJAhBgQIQZEiAERYkCEGBAhDej97x9Kff6WMP4YpQDB40fQ3ZdT52fnlInNm6Mv3v6kfv/v/bcPniQ5mX4EysSboNR8P7Er+c4p+67kTbP6apqM7Kqyn8p7/s2VDIu7eUIa0PpsDg7GvQtPttv64H+mAcqVC/JM5DPCumV0u6oPH9zPNEDrs4VYZvJfb6+cbNfLkFMyoFz5xQ0BqGcM21FyFZutz5RD9QBV7DABKZ+ly81Fbz4HC2i4hBkQFR0DIqJjQER0DIiI7uAApQyaWkR3eIC0+VCndaCAxGCMDheQ0LWtd8KHDCgtYF10Bw6od8IMiIpua4BgjqbrW2UJgE4HfTUrBujm5ma4BLwkIMWomxIALcTq0+Gm6SOAbm7GIbQtQFdi/cvhilAV0M1NMyF4TXghT/fFmX4PU71sq14Qh/duF2o6+D+n6thcWSqDIjPvFH9x2nkaPakNWv966BJkkdxgiWhhWp0uAMT6TL3UL/8tgdZMFPCitnoRWpKBF/7NlGcBr3fPt1aCxHLIdZWSS5CdBlfPVRQtyUPtPbpU2co/u3e9+uRS4RDmzwIMVbCtARpUyW3Q+kwTgnOVf6BEaRCL9fnX96+WapmdhSlq8s/SLJ2x2Cogs0ZA/w4tvReDZQUWJUDwFGG++vTn88t8JkJA5qnEVgFtLvo/MrTRdSmSuVpjplSCZCP015nIn14sRKQEie31YiatjglVo+sCyJ6r/OPaILG6/5u5KO5+chkCcnndbgnq+Zo6eh6XCAgKxNKXINeLCejXlnrtEQQIejFT5nSD3S3DrS3hr+wqOqZUiS61BKk2BRZJMoDMOEgqh8VU5qIECMZB8hC0U1sZBwm/Ihc/Wa1aqj9DPDK00R0koKkb6e1r2400iu4gAU3ZSE+j5CqWcSNdZzlwwgyIiq5XhDW9Re2EQ9y+OhFbiSAB0N9KI631l22DRqOLADo+Pu4TpWgAFFWEWh9A688DQre/6tUMRQAdH/cmNCkgcfv8iXMmv33lV+DrpCqg4+NGQuvz13a5Z3Ov4SdfQfLG4ui1XQgR7jvQ/GtoryNZ6YnYwt6xuAiCfKa0QWptwbsPP3v+8EGWPe457aEBWSTHWCJamJRvpAD/48LckbnJV1AOC4yiqdhg/jWwx5G4iVkfQZjPtEYaVozES6F3VnoJUjfk6/NLfSOqT9jenwr7f64cKM00SGn+1dtXIxF2NlJFUMpnci+2+fHHFtZ2VdHa8VJyG+QajKWvMgu/W09ZAxczkVaZHML2LhI3MesiKOVznG6+sMsbLuvWOUzuxfSZyXbizt9PI4CKEJCdcowCwpG4idlim4DQLVtRMw+TPA6C03MnjU8YWtmEEhRE4ohstQSh/rPupYVugCC2ZayKaS5F0AbVAKpGEkRQyuf+lSDzIYESIPMsMejFGkqQiWQu3MSsjyDM51htkGtRE9qgRrk26OjSPNsIAUXGQQ1tEESiJ2IL25f0HwfpfMpIc3JWyN72184EH+rNqqzbhXqZpfe82YECUo0LOAvwfFDVUv2BGqyW96cAdRko7qQ6lqCceMrUbaC4i+rWBhXEQvJjdPMTqUsvllUGC2XVDxS7P3qeSPszUNSKzYi1e1hXsbIfAVmgX7A7aBT2Z6Bo4hsQkLt0uEVdn/82KPNdH/tQn7MYa6A4OqAC7vO9khtp8yWdHg4lNrpkQOZWwN9hoOlXpVXUx1X/mBlfV3TuUUCbi1nof9DReUH1ZP18zTSgD40KQ9gpUQcomDkVQsR9XI3JPJygFTWAliWjrs4Lsm9qs/jC6rS28CeXIDclagEFM6faIu7jqot6MEGrFAWkfgaVo6PzgipBDYBQU1U3lk73MLMTWtGZU6W4j6tlUrr3d73YAv/SbHKU585tULOnkOm8hixBRQUQnjl1qVV8XK27RRVQpATZT4N6q24DRfV8qrmG6Yc0QwKqlCA8cwoNctzHtb4EVQGZq64zb/I52rP5/OhyhDaoUIDm/jHEsq6KIR9X2wbRgCxV1EyP6EBVmGtaF10qcTslqny1NxcZnjmNAAqnUmXRaAPI/oCW3uRzRBe81WnDcLL7OAhq+Qs0cxoHFEylwjhoYfyrTeNZBeSvp29AkhvplJkydZ3rozvIm1X2MGuwHDhhBkRFd5iARn0dahfVYZnAYtY0vmkf3UECUqOupXrs0/u1sYMFtBCr+1fwr2fChwlIjaTVNAMDiljCX3VPnc+5isUs9X+5GrQPsEjFwQIaLOEDBUQ+c28fXbYnSgNEzJPRsSSlC0sNqOn70soVVsdl9cpbTY6TDAdwDGqfrsUTLOxh+VTYjIMnHVDvIXTbdGOFx/KJ0RmJTyKgIV/qbVS08DThGShbyRktGw5wF9Ym3Qgee2ibpYfOaGDY4mnXQOmW65bdH4czIh0qo50M+0VXrVvuUA2ecfnsFqBqv+WPTQGnNqMNhuoJQK3TT890q/2WPzYFm9qMNhjqJySDLPpfUW3dElU+fZNvr87eHYOnW49nqsID6ujdMTiguhuKSdqdpowShtr5ED2aHSbd9jcUfdPtmVHaEBYQGmC9QJxu6269d6odNHk3X9dvTV63yhkdzDAlOuOJGPCJkJmQTyqg4b4vJgCP3vB4aulMhKfLOGio74thN1bAUw9nMjqiyzhooO+LhV6+TXx6ptRT6YCG+b5Y6AS9k2VHK7WKDfd9MaTdxdOhkR7s+2JIO0tHTN3NG+0kGaOdACR2FI7SSIBavNQbaBfRaCXNSc/bOnG2eal3TzRKCWr1SuaeaBRArV7q3RN18ZMm78Q+2hKUa8/5gpy0b/NS754oBVDlFaN6tXipd0+UAAgNoA/9a+FIad283Rhg0n5vlAKIXJlsZMUzmzVtVoM0HO9VrBkQIQZEiAERGtg/qGMeWuydDtD0YkCEGBAhBkSIAe2zGBAhBkSIARFiQIQYECEGRIgBEWJAhBgQIQZEiAERYkCEpgYEDjWVx7R6ljPylM6bLxvfDIjYNQeo1cSANhewkm0ZRd1nTb25ehxc/+G6iF1zgHpNDMisM1meC697euDMtR9F7ZPgqh0RoF5TVzFQ5coWjSfiPhZFPAnGdq0CxLQTgCorY+QPYy0TMtd1kHhMhe1aBYhpFwBVnGnMhw9rCClzXeaa25TArk2AqHYA0DLWXYnay720bS9xvqHdHgOqdcaKuytpc7rGlOz2t4rV+7VF+/oCr/nd0OaW7fa2kY5+LkefTexyW3Oq167Y7Ws3X/MeMZxIpJH25s3jvojdng4UzWrzlYybb2s0mBdNdw4xu8YA9Zq6iu28GBAhBkSIARFiQIQYECEGRIgBEWJAhBgQIQZEiAERYkCEGBAhBkSIARFiQIQYECEGRIgBEWJAhBgQIQZEiAERYkCEGBAhBkRoC4Ds0nmBL8KyaamiXAeouGJEvkHk/BE2F9EY1ZcJe2krgOBMl9gboflzS/YjDS2Wb3aA6vw+lz3XgN4eoGAl1DaAWnmrWJvaCGtKVmttD5A+7QLqmlpC/97P5kvo6/PX2Z1/nr04cx4vBpD7fPpcVRUwAscqW13th9iVlLcVeBUVMzC9glX6wausXxHacgkq5Pko7yZ1we2n4qEqrc+Ub7w5W1SCfAAwWuiqCusWK+fhpfX5UXAUJFlgwBTgQq3u4jWFtD1ABZyYuvTyREJAc/ORPOu26T8UgwLMdT3SvnTORzzXp+8Orz65hN/ef6/np8G22Iu5qymzHAJaCOH/CNeLzUsBNIFT/QmQhUawtICA1kxVKGNqCfX8PuG2SpBaMl83H8CKAOSajSAAAiR/FRiQc/vM5yYWuCzadC8Aab9l1x60BoQDkCVoff4nOezxHRrUv30BBLl1edeA5mHtiQAKAsTaoAK1QfLYQ9uU+0D70AYBIOhc4HwkKnVCm4t717IiNAJCAexx14upQ0EvZtzHtZV1/d2fXkznvjArpeWZak2z7EVzFXMB0PHacZBxzvdWcGz3x0Fbkaay+rQCo+83ZA8FkL4XK6rt8R7ci21Hcgi9Oq3C2Ie7+f0WAyLEgAgxIEIMiBADIsSACDEgQgyIEAMixIAIMSBCDIgQAyLEgAgxIEIMiBADIsSACDEgQgyI0P8BKeEK/CNOiiQAAAAASUVORK5CYII=" /><!-- --></p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="fu">print</span>(usgs_test)</span></code></pre></div>
+<pre><code>##   return_period estimate
+## 1             2      232
+## 2             5      301
+## 3            10      349
+## 4            20      397
+## 5            50      474
+## 6           100      557
+## 7           200      677</code></pre>
+</div>
+<div id="see-also-9" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<p><code>quick_ffa_ann()</code></p>
+</div>
+</div>
+<div id="max_min_timing" class="section level2">
+<h2>max_min_timing</h2>
+<hr />
+</div>
+<div id="flow_regime" class="section level2">
+<h2>flow_regime</h2>
+<hr />
+</div>
+</div>
+<div id="hydraulics-functions" class="section level1">
+<h1>Hydraulics Functions</h1>
+<hr />
+<div id="u_ferg" class="section level2">
+<h2>u_ferg</h2>
+<p>Estimating the mean flow velocity using the Ferguson 2007
+equation.</p>
+<div id="usage-10" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>u_ferg(R, S, d84, a1 = 6.5, a2 = 2.5, g = 9.81)</code></p>
+</div>
+<div id="arguments-10" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d84</code> 84th percentile diameter of bed sediment
+(m)</p></li>
+<li><p><code>a1</code> constant fit by Ferguson (2007). Defaults to
+6.5</p></li>
+<li><p><code>a2</code> constant fit by Ferguson (2007). Defaults to
+2.5</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+</ul>
+</div>
+<div id="details-10" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses the Ferguson (2007) flow resistance law to
+estimate the mean velocity of the flow using the bed surface D84</p>
+</div>
+<div id="output-10" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-10" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-10" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="tau_1d" class="section level2">
+<h2>tau_1D</h2>
+<p>Calculating the cross section average shear stress</p>
+<div id="usage-11" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>tau_1D(R, S, g = 9.81, rho = 1000)</code></p>
+</div>
+<div id="arguments-11" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-11" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this function calculates the average shear stress acting on the
+channel boundary for a given cross section.</p>
+</div>
+<div id="output-11" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-11" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-11" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="t_star" class="section level2">
+<h2>t_star</h2>
+<p>Estimating the dimensionless shear stress</p>
+<div id="usage-12" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>t_star(tau, d, g = 9.81, rho = 1000, rho_s = 2650)</code></p>
+</div>
+<div id="arguments-12" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>tau</code> the cross section-averaged shear stress
+(Pa/m<span class="math inline">\(^2\)</span>)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-12" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function calculates the dimensionless shear stress using the bed
+surface median grain size.</p>
+</div>
+<div id="output-12" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-12" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-12" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="unit_power" class="section level2">
+<h2>unit_power</h2>
+<p>Calculating the cross section average unit stream power</p>
+<div id="usage-13" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>unit_power(q, S, g = 9.81, rho = 1000)</code></p>
+</div>
+<div id="arguments-13" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>q</code> specific discharge (m<span class="math inline">\(^3\)</span>/s/m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-13" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this function calculates the unit stream power acting on the channel
+boundary for a given cross section.</p>
+</div>
+<div id="output-13" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-13" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-13" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+</div>
+<div id="sediment-transport-functions" class="section level1">
+<h1>Sediment Transport Functions</h1>
+<hr />
+<div id="mpm" class="section level2">
+<h2>mpm</h2>
+<p>Estimating bedload transport using Meyer Peter and Muller</p>
+<div id="usage-14" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>mpm(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650)</code></p>
+</div>
+<div id="arguments-14" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>t_crit</code> critical dimensionless shear stress. Defaults
+to 0.047</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-14" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless form of the traditional Meyer
+Peter and Muller equation to estimate the dimensionless bedload flux for
+a given shear stress and characteristic grain size.</p>
+</div>
+<div id="output-14" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-14" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-14" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="wp" class="section level2">
+<h2>wp</h2>
+<p>Estimating bedload transport using Wong and Parker (2006)</p>
+<div id="usage-15" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>wp(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650)</code></p>
+</div>
+<div id="arguments-15" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>t_crit</code> critical dimensionless shear stress. Defaults
+to 0.047</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-15" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless form of a modified version of
+Meyer Peter and Muller equation to estimate the dimensionless bedload
+flux for a given shear stress and characteristic grain size. Using the
+original Meyer Peter and Muller equation will produce higher transport
+estimates and is more conservative than using this modified version.</p>
+</div>
+<div id="output-15" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-15" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-15" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="eb" class="section level2">
+<h2>eb</h2>
+<p>Estimating bedload transport using Einstein and brown (1950)</p>
+<div id="usage-16" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>eb(R, S, d, g = 9.81, rho = 1000, rho_s = 2650, kv = 1e-06)</code></p>
+</div>
+<div id="arguments-16" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+</ul>
+</div>
+<div id="details-16" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless form of Einstein and brown (1950)
+bedload transport function for use with sand bed rivers and gravel bed
+rivers.</p>
+</div>
+<div id="output-16" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-16" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-16" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="yln" class="section level2">
+<h2>yln</h2>
+<p>Estimating bedload transport using Yalin (1963)</p>
+<div id="usage-17" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>yln(   R,   S,   d,   t_crit = t_crit_soul(d),   g = 9.81,   rho = 1000,   rho_s = 2650,   kv = 1e-06 )</code></p>
+</div>
+<div id="arguments-17" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>t_crit</code> critical dimensionless shear stress,
+calculated using Soulsby (1997)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+</ul>
+</div>
+<div id="details-17" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless form of Yalin’s (1963) bedload
+transport function for use with sand bed rivers and gravel bed
+rivers.</p>
+</div>
+<div id="output-17" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-17" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-17" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="vr" class="section level2">
+<h2>vr</h2>
+<p>Estimating bedload transport using Van Rijn (1984)</p>
+<div id="usage-18" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>vr(   R,   S,   d,   t_crit = t_crit_vr(d, rho, rho_s, g, kv),   g = 9.81,   rho = 1000,   rho_s = 2650,   kv = 1e-06 )</code>
+### Arguments {-}</p>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>t_crit</code> critical dimensionless shear stress</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+</ul>
+</div>
+<div id="details-18" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless form of Van Rijn’s (1984) bedload
+transport function for use with sand bed rivers.</p>
+</div>
+<div id="output-18" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-18" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-18" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="wc" class="section level2">
+<h2>wc</h2>
+<p>Estimating fractional bedload transport using Wilcock and Crowe
+(2003) in m3/second</p>
+<div id="usage-19" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>wc(R, S, gsd, Fsand, g = 9.81, rho = 1000, rho_s = 2650)</code></p>
+</div>
+<div id="arguments-18" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>gsd</code> a data frame describing the grain size
+distribution created with function wolman_gsd()</p></li>
+<li><p><code>Fsand</code> proportion of the surface that is covered by
+sand sized sediment (affects entrainment, typically varies from 0 to
+0.2)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>counts</code> number of stones in each size class size
+class bounds (!!!must start with a 0!!!)</p></li>
+</ul>
+</div>
+<div id="details-19" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses the Wilcock and Crowe transport function on
+standard data from a surface Wolman count to estimate the
+fraction-specific transport rate for a given shear stress. Output is a
+data frame containing inputted GSD information for each size class (Di,
+cpf, Dm, Fi), as well as the dimensionless transport rate (Wi), the
+volumetric transport rate per unit width (qbi), and the fraction of the
+computed bedload in each size class (Li)</p>
+</div>
+<div id="output-19" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-19" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-19" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="ec" class="section level2">
+<h2>ec</h2>
+<p>Estimating bed material transport using Eaton and Church (2011)</p>
+<div id="usage-20" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>ec(   R,   S,   d,   d84 = 2 * d,   g = 9.81,   rho = 1000,   rho_s = 2650,   U = u_ferg(R, S, d84, a1, a2, g),   a1 = 6.5,   a2 = 2.5,   kv = 1e-06,   t_crit = t_crit_soul(d, rho, rho_s, g, kv) )</code></p>
+</div>
+<div id="arguments-19" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>d84</code> 84th percentile diameter of bed sediment (m).
+Defaults to 2 * d</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>U</code> mean flow velocity. Defaults to flows calculated
+using Ferguson</p>
+<ol start="2007" style="list-style-type: decimal">
+<li></li>
+</ol></li>
+<li><p><code>a1</code> constant fit by Ferguson (2007). Defaults to
+6.5</p></li>
+<li><p><code>a2</code> constant fit by Ferguson (2007). Defaults to
+2.5</p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+<li><p><code>t_crit</code> critical dimensionless shear stress,
+calculated using Soulsby (1997)</p></li>
+</ul>
+</div>
+<div id="details-20" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless stream power equation from Eaton
+and Church (2011) to estimate bed material load transport in sand bed
+rivers and gravel bed rivers.</p>
+</div>
+<div id="output-20" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-20" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-20" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="rk" class="section level2">
+<h2>rk</h2>
+<p>Estimating bed material transport using Recking (2013)</p>
+<div id="usage-21" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>rk(R, S, d, d84 = 2 * d, g = 9.81, rho = 1000, rho_s = 2650, rp = FALSE)</code></p>
+</div>
+<div id="arguments-20" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>d84</code> 84th percentile diameter of bed sediment (m).
+Defaults to 2 * d</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rp</code> option to select equation suited to riffle pool
+morphology, default is FALSE</p></li>
+</ul>
+</div>
+<div id="details-21" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses a dimensionless shear stress equation from Recking
+based on the D84 of the bed surface, and is the version for use with
+field data.</p>
+</div>
+<div id="output-21" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-21" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-21" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+</div>
+<div id="bed-entrainment-functions" class="section level1">
+<h1>Bed Entrainment Functions</h1>
+<hr />
+<div id="qb_conversion" class="section level2">
+<h2>qb_conversion</h2>
+<p>Converting dimensionless bedload flux to volumetric flux</p>
+<div id="usage-22" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>qb_conversion(q_star, d, g = 9.81, Gs = 1.65)</code></p>
+</div>
+<div id="arguments-21" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>q_star</code> dimensionless bedload flux}</p></li>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>Gs</code> the submerged specific gravity of sediment.
+Defaults to 1.65</p></li>
+</ul>
+</div>
+<div id="details-22" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this function converts dimensionless bedload transport flux values to
+fluxes in cubic meters per second per meter</p>
+</div>
+<div id="output-22" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-22" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-22" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="t_crit_soul" class="section level2">
+<h2>t_crit_soul</h2>
+<p>Estimating critical dimensionless shear stress</p>
+<div id="usage-23" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>t_crit_soul(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-06)</code></p>
+</div>
+<div id="arguments-22" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+</ul>
+</div>
+<div id="details-23" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>Using the equation published by Soulsby (1997), this function
+estimates the critical dimensionless shear stress as a function of grain
+size.</p>
+</div>
+<div id="output-23" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-23" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-23" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="t_crit_vr" class="section level2">
+<h2>t_crit_vr</h2>
+<p>Estimating critical dimensionless shear stress</p>
+<div id="usage-24" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>t_crit_vr(d, rho = 1000, rho_s = 2650, g = 9.81, kv = 1e-06)</code></p>
+</div>
+<div id="arguments-23" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+</ul>
+</div>
+<div id="details-24" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>Using the equation published by Van Rijn (1984), this function
+estimates the critical dimensionless shear stress as a function of grain
+size.</p>
+</div>
+<div id="output-24" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-24" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-24" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="t_ref_star" class="section level2">
+<h2>t_ref_star</h2>
+<p>Estimating reference dimensionless shear stress for Wilcock &amp;
+Crowe (2003)</p>
+<div id="usage-25" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>t_ref_star(Fsand)</code></p>
+</div>
+<div id="arguments-24" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><code>Fsand</code> Proportion of sand on the bed surface</li>
+</ul>
+</div>
+<div id="details-25" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>Using the equation published by Wilcock &amp; Crow, this function
+estimates the reference dimensionless shear stress based on the fraction
+of sand on the bed.</p>
+</div>
+<div id="output-25" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-25" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-25" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="crit_power" class="section level2">
+<h2>crit_power</h2>
+<p>Estimating critical stream power for bed entrainment</p>
+<div id="usage-26" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>crit_power(D50, d, use_ferguson = TRUE)</code></p>
+</div>
+<div id="arguments-25" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>D50</code> median bed sediment grain diameter (mm)</p></li>
+<li><p><code>d</code> flow depth (m)</p></li>
+</ul>
+</div>
+<div id="details-26" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>Using the equation published by Ferguson (2005) or Petit et
+al. (2005), this function estimates the critical stream power as a
+function of grain size, and flow depth. These empirical equations are
+valid for D50 ranging from 20 to 150 mm</p>
+</div>
+<div id="output-26" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-26" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-26" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+</div>
+<div id="data-import-analysis-simulation-functions" class="section level1">
+<h1>Data Import / Analysis / Simulation Functions</h1>
+<div id="scs_hydrography" class="section level2">
+<h2>scs_hydrography</h2>
+<p>Creating a hydrograph based on the Standard SCS Dimensionless Unit
+Hydrograph</p>
+<div id="usage-27" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>scs_hydrograph(Qpeak, tpeak, dt)</code></p>
+</div>
+<div id="arguments-26" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>Qpeak</code> the peak instantaneous discharge to be reached
+during the hydrograph (cumecs)</p></li>
+<li><p><code>tpeak</code> the lag time between the peak rainfall input
+and the peak runoff (hours)</p></li>
+<li><p><code>dt</code> a parameter that controls the time increment for
+data output (in hours)</p></li>
+</ul>
+</div>
+<div id="details-27" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function uses the Soil Conservation Service Standard Unit
+Hydrograph to simulate a simple hydrograph associated with a rainfall
+event. The hydrograph depends on a parameter controlling the peak flow
+that will be reached and a parameter controlling how quickly the
+hydrograph will rise and fall. The shape of the hydrograph remains the
+same.</p>
+<p>The dimensionless unit hydrograph used by the SCS was developed by
+Victor Mockus and was derived based on a large number of unit
+hydrographs from basins that varied in characteristics such as size and
+geographic location. The unit hydrographs were averaged and the final
+product was made dimensionless by considering the ratios of Q/Qpeak
+(flow/peak flow) on the ordinate axis and t/tpeak (time/time to peak) on
+the abscissa. This final, dimensionless unit hydrograph, which is the
+result of averaging a large number of individual dimensionless unit
+hydrographs, has a time-to-peak located at approximately 20 percent of
+its time base and an inflection point at 1.7 times the time-to-peak.</p>
+</div>
+<div id="output-27" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-27" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-27" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="wolman_gsd" class="section level2">
+<h2>wolman_gsd</h2>
+<p>Processing Wolman count data into grain size distribution</p>
+<div id="usage-28" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>wolman_gsd(Di, counts)</code></p>
+</div>
+<div id="arguments-27" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>Di</code> a list of grain sizes representing the upper
+bounds of the size classes</p></li>
+<li><p><code>counts</code> the number of stones sampled in the szie
+class defined by the upper bound values, Di</p></li>
+</ul>
+<p>This function uses standard data from a surface Wolman count to
+estimate cumulative percent finer for each size, the fraction of the
+distribution in a given size class, and the median size of each size
+class. Output is a data frame containing the upper limit of each size
+class (Di), the cumulative proportion finer than the size listed in Di
+(cpf), the median size for each size class (Dm), and the fraction of the
+distribution in each class (Fi)</p>
+</div>
+<div id="output-28" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-28" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-28" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="make_trapezoid" class="section level2">
+<h2>make_trapezoid</h2>
+<p>Create a cross section based on measured trapezoid dimensions</p>
+<div id="usage-29" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>make_trapezoid(w_top, w_bot, H_bank, Z_fp, dx = 0.1)</code></p>
+</div>
+<div id="arguments-28" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>w_top</code> measured or estimated top width of the
+trapezoid (m)</p></li>
+<li><p><code>w_bot</code> measured or estimated bottom width of the
+trapezoid (m)</p></li>
+<li><p><code>H_bank</code> measures or estimated vertical height of the
+trapezoid (m)</p></li>
+<li><p><code>dx</code> a parameter controlling the spacing between
+exported data points on the section</p></li>
+<li><p><code>z_fp</code> elevation of the top of the trapezoid (i.e. the
+floodplain or terrace elevation, m)</p></li>
+</ul>
+</div>
+<div id="details-28" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function creates profile data including the distance along the
+profile from the left bank.</p>
+</div>
+<div id="output-29" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-29" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-29" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+<hr />
+</div>
+</div>
+<div id="load_section" class="section level2">
+<h2>load_section</h2>
+<p>Load cross section data</p>
+<div id="usage-30" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>load_section(xs_nm, dx = NA, rev = FALSE, trim = FALSE, mkplt = FALSE)</code></p>
+</div>
+<div id="arguments-29" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>xs_nm</code> path to a csv file with 3 columns containing
+the profile data</p></li>
+<li><p><code>dx</code> optional dist. increment to resample section at
+regular intervals (m)</p></li>
+<li><p><code>rev</code> option to reverse the direction in which
+distance is measured</p></li>
+<li><p><code>trim</code> option to identify left &amp; right banks and
+trim section</p></li>
+<li><p><code>mkplt</code> option to make a plot of the data (original
+&amp; resampled/trimed)</p></li>
+</ul>
+</div>
+<div id="details-29" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function loads profile data that is saved in a text file (XYZ
+format) and calculates the distance along the profile from the first
+data point in the file. The function assumes that the first row is
+header information, and that the data in column 1 correspond to x
+coordinates (or eastings), column 2 corresponds to y coordinates
+(northings), and column 3 corresponds to elevation.</p>
+</div>
+<div id="output-30" class="section level3 unnumbered">
+<h3 class="unnumbered">Output</h3>
+</div>
+<div id="examples-30" class="section level3 unnumbered">
+<h3 class="unnumbered">Examples</h3>
+</div>
+<div id="see-also-30" class="section level3 unnumbered">
+<h3 class="unnumbered">See also</h3>
+</div>
+</div>
+</div>
+<div id="utility-functions" class="section level1">
+<h1>Utility Functions</h1>
+<div id="find_q_b" class="section level2">
+<h2>find_q_b</h2>
+<p>Calculating volumetric unit transport rate for a specified
+function</p>
+<div id="usage-31" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>find_q_b(R, S, D50, D84, fun = &quot;ec&quot;, g = 9.81, rho = 1000, rho_s = 2650)</code></p>
+</div>
+<div id="arguments-30" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>R</code> hydraulic radius for the flow (m)</p></li>
+<li><p><code>S</code> gradient of the water surface slope (m/m)</p></li>
+<li><p><code>D50</code> 50th percentile of the grain size distribution
+(m)</p></li>
+<li><p><code>D84</code> 84th percentile of the surface grain size
+distribution (m)</p></li>
+<li><p><code>fun</code> choice of transport function. Default is Eaton
+and Church (“ec”)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+<li><p><code>rho_s</code> sediment density. Defaults to 2650 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-30" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>This function takes the hydraulic data required to calculate the
+dimensionless shear stress and uses a specified bedload transport
+function to calculate the volumetric transport rate per unit width.</p>
+<hr />
+</div>
+</div>
+<div id="find_d_crit" class="section level2">
+<h2>find_d_crit</h2>
+<p>find the critical depth at which bank erosion will begin</p>
+<div id="usage-32" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>find_d_crit(Q, H, t_c84, S, g = 9.81, rho = 1000, tol = 0.001)</code></p>
+</div>
+<div id="arguments-31" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>Q</code> a list of discharge values at regular time
+intervals defining the flood hydrograph (m<span class="math inline">\(^3\)</span>/s)</p></li>
+<li><p><code>H</code> effective rooting depth for vegetation</p></li>
+<li><p><code>t_c84</code> stress required to entrain the 84th percentile
+of the bed surface</p></li>
+<li><p><code>S</code> energy gradient of the stream channel
+(m/m)</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>rho</code> fluid density. Defaults to 1000 kg/m<span class="math inline">\(^3\)</span></p></li>
+</ul>
+</div>
+<div id="details-31" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this is a utility function used by GBEM to determine the typical
+floodplain thickness above the channel bed. ***</p>
+</div>
+</div>
+<div id="est_mu" class="section level2">
+<h2>est_mu</h2>
+<p>estimate relative bank strength</p>
+<div id="usage-33" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>est_mu(H, d)</code></p>
+</div>
+<div id="arguments-32" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>H</code> effective rooting depth for vegetation}</p></li>
+<li><p><code>d</code> channel depths}</p></li>
+</ul>
+</div>
+<div id="details-32" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this is a utility function used by GBEM to determine the relative
+bank strength given the channel depth and rooting depth. It returns a
+variable that is the bank strength relative to the bed strengths.</p>
+<hr />
+</div>
+</div>
+<div id="d_star" class="section level2">
+<h2>d_star</h2>
+<p>Estimating dimensionless particle size</p>
+<div id="usage-34" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>d_star(d, Gs = 1.65, g = 9.81, kv = 1e-06)</code></p>
+</div>
+<div id="arguments-33" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>d</code> median bed sediment grain diameter (m)</p></li>
+<li><p><code>Gs</code> the submerged specific gravity of sediment.
+Defaults to 1.65</p></li>
+<li><p><code>g</code> the acceleration of gravity. defaults to 9.81
+m/s<span class="math inline">\(^2\)</span></p></li>
+<li><p><code>kv</code> kinematic viscosity of water. Defaults to 1e<span class="math inline">\(^-6\)</span></p></li>
+</ul>
+</div>
+<div id="details-33" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this function estimates the dimensionless particle size</p>
+<hr />
+</div>
+</div>
+<div id="calc_depths" class="section level2">
+<h2>calc_depths</h2>
+<div id="usage-35" class="section level3 unnumbered">
+<h3 class="unnumbered">Usage</h3>
+<p><code>calc_depths(xs_data, wse, mkplt = F)</code></p>
+</div>
+<div id="arguments-34" class="section level3 unnumbered">
+<h3 class="unnumbered">Arguments</h3>
+<ul>
+<li><p><code>xs_data</code> a data frame containing $dist (distances)
+and $z (elevations)</p></li>
+<li><p><code>wse</code> elevation of the water surface of interest
+(m)</p></li>
+<li><p><code>mkplt</code> logical option to plot the data, default is
+FALSE}</p></li>
+</ul>
+</div>
+<div id="details-34" class="section level3 unnumbered">
+<h3 class="unnumbered">Details</h3>
+<p>this function uses a water surface elevation (WSE) and the location
+index for the channel thalweg to calculate the depths in the main
+channel. disconnected areas outside the main channel that are below the
+WSE are located and assigned a depth of NA. This is particularly
+important on a fan</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

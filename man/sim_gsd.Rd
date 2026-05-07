@@ -4,7 +4,7 @@
 \alias{sim_gsd}
 \title{Processing Wolman count data into grain size distribution}
 \usage{
-sim_gsd(D50, sp = 1, Map = FALSE)
+sim_gsd(D50, sp = 1, plot_gsd = FALSE)
 }
 \arguments{
 \item{D50}{an estimate of the median bed surface grain size (mm)}
