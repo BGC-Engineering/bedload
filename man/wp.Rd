@@ -4,7 +4,15 @@
 \alias{wp}
 \title{Estimating bedload transport using Wong and Parker (2006)}
 \usage{
-wp(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650)
+wp(
+  R,
+  S,
+  d,
+  t_crit = t_crit_soul(d, rho, rho_s, g),
+  g = 9.81,
+  rho = 1000,
+  rho_s = 2650
+)
 }
 \arguments{
 \item{R}{hydraulic radius for the flow (m)}
@@ -13,7 +21,7 @@ wp(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650)
 
 \item{d}{median bed sediment grain diameter (m)}
 
-\item{t_crit}{critical dimensionless shear stress. Defaults to 0.047}
+\item{t_crit}{critical dimensionless shear stress. Defaults to values from Soulsby}
 
 \item{g}{the acceleration of gravity. defaults to 9.81 m/s2}
 

@@ -171,12 +171,12 @@ d_star <- function(d, Gs = 1.65, g = 9.81, kv = 1e-6){
 #' @param R hydraulic radius for the flow (m)
 #' @param S gradient of the water surface slope (m/m)
 #' @param d median bed sediment grain diameter (m)
-#' @param t_crit critical dimensionless shear stress. Defaults to 0.047
+#' @param t_crit critical dimensionless shear stress. Defaults values from Soulsby
 #' @param g the acceleration of gravity. defaults to 9.81 m/s2
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-mpm <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650) {
+mpm <- function(R, S, d, t_crit = t_crit_soul(d, rho, rho_s, g), g = 9.81, rho = 1000, rho_s = 2650) {
   # Computes dimensionless bedload transport rate using the
   # Meyer-Peter & Müller (1948) equation.
   #
@@ -216,12 +216,12 @@ mpm <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650) {
 #' @param R hydraulic radius for the flow (m)
 #' @param S gradient of the water surface slope (m/m)
 #' @param d median bed sediment grain diameter (m)
-#' @param t_crit critical dimensionless shear stress. Defaults to 0.047
+#' @param t_crit critical dimensionless shear stress. Defaults to values from Soulsby
 #' @param g the acceleration of gravity. defaults to 9.81 m/s2
 #' @param rho fluid density. Defaults to 1000 kg/m3
 #' @param rho_s sediment density. Defaults to 2650 kg/m3
 #' @export
-wp <- function(R, S, d, t_crit = 0.047, g = 9.81, rho = 1000, rho_s = 2650) {
+wp <- function(R, S, d, t_crit = t_crit_soul(d, rho, rho_s, g), g = 9.81, rho = 1000, rho_s = 2650) {
   # Computes dimensionless bedload transport rate using the
   # Wong & Parker (2006) equation.
   #
@@ -1099,7 +1099,7 @@ wc <- function(R, S, gsd, Fsand, g = 9.81, rho = 1000, rho_s = 2650) {
   # --- size-specific critical shear stress ---
   shields_50 <- t_ref_star(Fsand)
   b          <- 0.67 / (1 + exp(1.5 - gsd$dm / d50))
-  tr_i       <- g * shields_50 * (rho_s - rho) * (gsd$dm / 1000) * (gsd$dm / d50)^b
+  tr_i       <- g * shields_50 * (rho_s - rho) * (gsd$d50 / 1000) * (gsd$dm / d50)^b
 
   # --- dimensionless transport parameter W* (two-regime, Wilcock & Crowe 2003) ---
   phi  <- tau / tr_i
