@@ -1094,12 +1094,14 @@ wc <- function(R, S, gsd, Fsand, g = 9.81, rho = 1000, rho_s = 2650) {
   u_star <- sqrt(tau / rho)
 
   # --- grain size statistics ---
-  d50 <- approx(x = gsd$cpf, y = gsd$Di, xout = 0.5)[[2]]  # surface median (mm)
+  gsd <- gsd[!duplicated(gsd$cpf), ]
+  gsd <- gsd[order(gsd$cpf), ]
+  d50 <- approx(x = gsd$cpf, y = gsd$Di, xout = 0.5, ties = "ordered")$y  # surface median (mm)
 
   # --- size-specific critical shear stress ---
   shields_50 <- t_ref_star(Fsand)
   b          <- 0.67 / (1 + exp(1.5 - gsd$dm / d50))
-  tr_i       <- g * shields_50 * (rho_s - rho) * (gsd$d50 / 1000) * (gsd$dm / d50)^b
+  tr_i       <- g * shields_50 * (rho_s - rho) * (d50 / 1000) * (gsd$dm / d50)^b
 
   # --- dimensionless transport parameter W* (two-regime, Wilcock & Crowe 2003) ---
   phi  <- tau / tr_i
